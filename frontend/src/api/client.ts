@@ -4,6 +4,8 @@ import type {
   NotificationRecord,
   PriceSnapshot,
   Product,
+  MultiSearchCardRequest,
+  MultiSearchResult,
 } from "../types";
 
 const BASE = "/api";
@@ -94,6 +96,14 @@ export async function checkWatchlistItem(id: number) {
     `/watchlist/${id}/check`,
     { method: "POST" }
   );
+}
+
+// Multi-card search
+export async function multiCardSearch(cards: MultiSearchCardRequest[]) {
+  return request<{ data: MultiSearchResult }>("/cards/multi-search", {
+    method: "POST",
+    body: JSON.stringify({ cards }),
+  });
 }
 
 // Notifications

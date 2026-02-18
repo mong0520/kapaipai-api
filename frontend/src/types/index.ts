@@ -58,3 +58,43 @@ export interface NotificationRecord {
   card_name: string | null;
   rare: string | null;
 }
+
+// Multi-card search
+export interface MultiSearchCardRequest {
+  name: string;
+  quantity: number;
+}
+
+export interface SellerProductDetail extends Product {
+  variant_pack_name: string;
+  variant_rare: string;
+}
+
+export interface SellerCardDetail {
+  total_stock: number;
+  lowest_price: number;
+  estimated_cost: number;
+  products: SellerProductDetail[];
+}
+
+export interface SellerMatch {
+  seller_nickname: string;
+  seller_area: string;
+  credit: number;
+  order_complete: number;
+  total_cost: number;
+  cards: Record<string, SellerCardDetail>;
+}
+
+export interface MultiSearchResult {
+  sellers: SellerMatch[];
+  card_details: Record<
+    string,
+    { variants_count: number; error: string | null }
+  >;
+  stats: {
+    total_sellers_scanned: number;
+    matching_sellers: number;
+    cards_requested: number;
+  };
+}

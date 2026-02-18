@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify, request
 
 from app.services.kapaipai import search_cards, fetch_products, filter_buyable
+from app.services.multi_search import multi_card_search
 
 cards_bp = Blueprint("cards", __name__)
 
@@ -55,3 +56,32 @@ def products():
             "avg_price": round(sum(prices) / len(prices), 2) if prices else None,
         }
     })
+
+
+@cards_bp.route("/multi-search", methods=["POST"])
+def multi_search():
+    """Find sellers who have ALL specified cards with sufficient stock.
+
+    POST /api/cards/multi-search
+    Body: {"cards": [{"name": "喵喵ex", "quantity": 2}, ...]}
+    """
+    data = request.get_json()
+    if not data or not data.get("cards"):
+        return jsonify({"error": "cards array is required"}), 400
+
+    cards = data["cards"]
+    if len(cards) > 10:
+        return jsonify({"error": "Maximum 10 cards per search"}), 400
+
+    for card in cards:
+        if not card.get("name", "").strip():
+            return jsonify({"error": "Each card must have a name"}), 400
+        card["name"] = card["name"].strip()
+        card["quantity"] = max(1, min(99, int(card.get("quantity", 1))))
+
+    try:
+        result = multi_card_search(cards)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
+
+    return jsonify({"data": result})
