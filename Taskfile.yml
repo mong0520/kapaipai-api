@@ -52,3 +52,12 @@ tasks:
     desc: Restart a specific service
     cmds:
       - docker compose restart {{.CLI_ARGS}}
+
+  deploy:
+    desc: Deploy to EC2 via git pull + docker compose
+    vars:
+      SSH_KEY: ~/.ssh/aws-tpe.pem
+      SSH_HOST: ubuntu@43.213.67.238
+      REMOTE_DIR: /home/ubuntu/git/sdgget
+    cmds:
+      - ssh -i {{.SSH_KEY}} {{.SSH_HOST}} "cd {{.REMOTE_DIR}} && git pull && docker compose up -d --build"
