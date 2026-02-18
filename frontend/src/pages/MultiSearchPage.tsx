@@ -1,8 +1,15 @@
 import { useState } from "react";
-import type { MultiSearchCardRequest, MultiSearchResult, SellerMatch } from "../types";
+import type { MultiSearchCardRequest, MultiSearchResult, SellerMatch, SellerCardDetail } from "../types";
 import { multiCardSearch } from "../api/client";
 
 type SortKey = "total_cost" | "credit" | "order_complete";
+
+function cardImageUrlFromDetail(detail: SellerCardDetail): string | null {
+  const p = detail.products[0];
+  if (!p?.card_key || !p?.pack_id || !p?.pack_card_id || !p?.variant_rare) return null;
+  const rare = p.variant_rare.split(", ")[0];
+  return `https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(p.card_key)}/${encodeURIComponent(p.pack_id)}/${encodeURIComponent(p.pack_card_id)}/${encodeURIComponent(rare)}.jpg`;
+}
 
 export default function MultiSearchPage() {
   const [tags, setTags] = useState<MultiSearchCardRequest[]>([]);
@@ -350,6 +357,18 @@ export default function MultiSearchPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
+                      {(() => {
+                        const imgUrl = cardImageUrlFromDetail(detail);
+                        return imgUrl ? (
+                          <img
+                            src={imgUrl}
+                            alt={cardName}
+                            className="w-8 object-contain rounded border border-vault-600/50"
+                            loading="lazy"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                        ) : null;
+                      })()}
                       <span className="text-sm text-gray-300">
                         {detail.found_card_names?.length
                           ? detail.found_card_names.join("、")

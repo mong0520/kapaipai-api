@@ -85,6 +85,9 @@ def multi_card_search(card_requests, max_workers=8):
                     entry["products"].append({
                         **product,
                         "card_name": variant.get("card_name", ""),
+                        "card_key": variant.get("card_key", ""),
+                        "pack_id": variant.get("pack_id", ""),
+                        "pack_card_id": variant.get("pack_card_id", ""),
                         "variant_pack_name": variant.get("pack_name", ""),
                         "variant_rare": variant.get("rare", ""),
                     })

@@ -66,6 +66,10 @@ export interface MultiSearchCardRequest {
 }
 
 export interface SellerProductDetail extends Product {
+  card_name: string;
+  card_key: string;
+  pack_id: string;
+  pack_card_id: string;
   variant_pack_name: string;
   variant_rare: string;
 }
