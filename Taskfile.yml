@@ -58,6 +58,6 @@ tasks:
     vars:
       SSH_KEY: ~/.ssh/aws-tpe.pem
       SSH_HOST: ubuntu@43.213.67.238
-      REMOTE_DIR: /home/ubuntu/git/sdgget
+      REMOTE_DIR: /home/ubuntu/git/kapaipai-api
     cmds:
       - ssh -i {{.SSH_KEY}} {{.SSH_HOST}} "cd {{.REMOTE_DIR}} && git pull && docker compose up -d --build"
