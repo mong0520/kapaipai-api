@@ -409,6 +409,13 @@ export default function MultiSearchPage() {
                           className="flex items-center justify-between py-1.5 px-3 rounded bg-vault-800/50 text-xs"
                         >
                           <div className="flex items-center gap-3">
+                            <img
+                              src={`https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(product.card_key)}/${encodeURIComponent(product.pack_id)}/${encodeURIComponent(product.pack_card_id)}/${encodeURIComponent(product.variant_rare.split(", ")[0])}.jpg`}
+                              alt={product.card_name}
+                              className="w-6 object-contain rounded border border-vault-600/50"
+                              loading="lazy"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            />
                             <span className="badge badge-rare text-[10px]">
                               {product.variant_rare}
                             </span>
