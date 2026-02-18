@@ -3,6 +3,11 @@ import type { CardVariant } from "../types";
 import { searchCards, addToWatchlist } from "../api/client";
 import PriceAlertModal from "../components/PriceAlertModal";
 
+function cardImageUrl(card: CardVariant): string {
+  const rare = card.rare.split(", ")[0];
+  return `https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(card.card_key)}/${encodeURIComponent(card.pack_id)}/${encodeURIComponent(card.pack_card_id)}/${encodeURIComponent(rare)}.jpg`;
+}
+
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CardVariant[]>([]);
@@ -180,6 +185,7 @@ export default function SearchPage() {
                       className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
                     />
                   </th>
+                  <th className="table-header w-14">卡圖</th>
                   <th className="table-header">卡牌名稱</th>
                   <th className="table-header">擴充包</th>
                   <th className="table-header">編號</th>
@@ -210,6 +216,15 @@ export default function SearchPage() {
                           onChange={() => toggleSelect(key)}
                           onClick={(e) => e.stopPropagation()}
                           className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
+                        />
+                      </td>
+                      <td className="table-cell">
+                        <img
+                          src={cardImageUrl(card)}
+                          alt={card.card_name}
+                          className="w-10 h-14 object-cover rounded border border-vault-600/50"
+                          loading="lazy"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                         />
                       </td>
                       <td className="table-cell font-medium text-gray-200">
