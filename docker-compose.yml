@@ -1,15 +1,16 @@
 services:
   db:
-    image: mysql:8.0
+    image: postgres:13
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-kapaipai}
+      POSTGRES_USER: ${PG_USER:-kapaipai}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-kapaipai}
+      POSTGRES_DB: ${PG_DATABASE:-kapaipai}
     ports:
-      - "3308:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-kapaipai}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -35,4 +36,4 @@ services:
       - backend
 
 volumes:
-  mysql_data:
+  pg_data:

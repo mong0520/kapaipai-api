@@ -27,9 +27,9 @@ tasks:
       - docker compose exec backend alembic revision --autogenerate -m "{{.CLI_ARGS}}"
 
   db-shell:
-    desc: Connect to MySQL shell
+    desc: Connect to PostgreSQL shell
     cmds:
-      - mycli -h 127.0.0.1 -P 3308 -u root -prootpass kapaipai
+      - pgcli -h 127.0.0.1 -p 5432 -U kapaipai -d kapaipai
 
   seed:
     desc: Seed default user

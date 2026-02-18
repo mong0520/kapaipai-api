@@ -6,7 +6,7 @@ Pokemon TCG card price alert system for [kapaipai.tw](https://trade.kapaipai.tw)
 
 - **Frontend:** React 19 + Vite 7 + TypeScript + Tailwind CSS
 - **Backend:** Flask + SQLAlchemy + APScheduler
-- **Database:** MySQL 8.0 (PyMySQL driver)
+- **Database:** PostgreSQL 13 (psycopg2 driver)
 - **Notifications:** LINE Messaging API
 - **Infra:** Docker Compose (3 services)
 
@@ -22,7 +22,7 @@ backend (Flask :5001)
 ├── /api/watchlist   → CRUD watchlist items + manual price check
 └── /api/notifications → notification history
 
-db (MySQL :3306, exposed :3308)
+db (PostgreSQL :5432)
 ```
 
 ## Project Structure
@@ -78,7 +78,7 @@ legacy/                    # Original CLI tools (preserved for reference)
 task up          # docker compose up -d --build
 task down        # docker compose down
 task logs        # docker compose logs -f
-task db-shell    # mycli into MySQL
+task db-shell    # pgcli into PostgreSQL
 task db-migrate  # alembic upgrade head
 task db-revision # create new migration (pass message as arg)
 task seed        # seed default user
@@ -88,10 +88,19 @@ task be-dev      # backend dev server (flask run)
 
 ## Environment Variables (.env)
 
-- `MYSQL_*` — DB connection
+- `PG_HOST`, `PG_PORT`, `PG_USER`, `PG_PASSWORD`, `PG_DATABASE` — DB connection
 - `FLASK_APP`, `SECRET_KEY` — Flask config
 - `LINE_CHANNEL_ACCESS_TOKEN`, `LINE_CHANNEL_SECRET`, `LINE_USER_ID` — LINE API
 - `PRICE_CHECK_INTERVAL_MINUTES` — Scheduler interval (default 10)
+
+## Database Deployment Options
+
+1. **Standalone** (default): `docker compose up` includes a PostgreSQL service
+2. **Shared with Kong**: Point `PG_*` env vars to Kong's PostgreSQL and remove/comment out the `db` service in docker-compose.yml. Create the `kapaipai` database on Kong's instance:
+   ```sql
+   CREATE DATABASE kapaipai;
+   GRANT ALL PRIVILEGES ON DATABASE kapaipai TO kong;
+   ```
 
 ## Design Notes
 

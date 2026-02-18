@@ -4,15 +4,15 @@ import os
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
-    MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-    MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
-    MYSQL_USER = os.getenv("MYSQL_USER", "root")
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "rootpass")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "kapaipai")
+    PG_HOST = os.getenv("PG_HOST", "127.0.0.1")
+    PG_PORT = os.getenv("PG_PORT", "5432")
+    PG_USER = os.getenv("PG_USER", "kapaipai")
+    PG_PASSWORD = os.getenv("PG_PASSWORD", "kapaipai")
+    PG_DATABASE = os.getenv("PG_DATABASE", "kapaipai")
 
     SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
-        f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
+        f"postgresql+psycopg2://{PG_USER}:{PG_PASSWORD}"
+        f"@{PG_HOST}:{PG_PORT}/{PG_DATABASE}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

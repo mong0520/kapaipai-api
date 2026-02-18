@@ -37,7 +37,7 @@ def upgrade() -> None:
         sa.Column("pack_card_id", sa.String(50), nullable=True),
         sa.Column("rare", sa.String(50), nullable=False),
         sa.Column("target_price", sa.Integer, nullable=False),
-        sa.Column("is_active", sa.Boolean, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean, server_default=sa.text("true")),
         sa.Column("created_at", sa.DateTime, server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime, server_default=sa.func.now(), onupdate=sa.func.now()),
         sa.UniqueConstraint("user_id", "card_key", "rare", "pack_id", name="uq_user_card"),

@@ -11,9 +11,9 @@ if config.config_file_name is not None:
 
 # Build URL from env vars (override alembic.ini)
 db_url = (
-    f"mysql+pymysql://{os.getenv('MYSQL_USER', 'root')}:{os.getenv('MYSQL_PASSWORD', 'rootpass')}"
-    f"@{os.getenv('MYSQL_HOST', 'db')}:{os.getenv('MYSQL_PORT', '3306')}"
-    f"/{os.getenv('MYSQL_DATABASE', 'kapaipai')}?charset=utf8mb4"
+    f"postgresql+psycopg2://{os.getenv('PG_USER', 'kapaipai')}:{os.getenv('PG_PASSWORD', 'kapaipai')}"
+    f"@{os.getenv('PG_HOST', 'db')}:{os.getenv('PG_PORT', '5432')}"
+    f"/{os.getenv('PG_DATABASE', 'kapaipai')}"
 )
 config.set_main_option("sqlalchemy.url", db_url)
 
