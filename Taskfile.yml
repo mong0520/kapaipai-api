@@ -1,0 +1,54 @@
+version: "3"
+
+tasks:
+  up:
+    desc: Start all services
+    cmds:
+      - docker compose up -d --build
+
+  down:
+    desc: Stop all services
+    cmds:
+      - docker compose down
+
+  logs:
+    desc: Follow logs
+    cmds:
+      - docker compose logs -f {{.CLI_ARGS}}
+
+  db-migrate:
+    desc: Run database migrations
+    cmds:
+      - docker compose exec backend alembic upgrade head
+
+  db-revision:
+    desc: Create a new migration revision
+    cmds:
+      - docker compose exec backend alembic revision --autogenerate -m "{{.CLI_ARGS}}"
+
+  db-shell:
+    desc: Connect to MySQL shell
+    cmds:
+      - mycli -h 127.0.0.1 -P 3308 -u root -prootpass kapaipai
+
+  seed:
+    desc: Seed default user
+    cmds:
+      - docker compose exec backend python -m app.seed
+
+  fe-dev:
+    desc: Start frontend dev server
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  be-dev:
+    desc: Start backend dev server
+    dir: backend
+    cmds:
+      - flask run --debug --port 5001
+
+  restart:
+    desc: Restart a specific service
+    cmds:
+      - docker compose restart {{.CLI_ARGS}}
