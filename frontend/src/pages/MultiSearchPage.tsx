@@ -43,7 +43,7 @@ export default function MultiSearchPage() {
   }
 
   async function handleSearch() {
-    if (tags.length < 2) return;
+    if (tags.length < 1) return;
     setLoading(true);
     setError("");
     setSearched(true);
@@ -173,7 +173,7 @@ export default function MultiSearchPage() {
           </button>
           <button
             onClick={handleSearch}
-            disabled={loading || tags.length < 2}
+            disabled={loading || tags.length < 1}
             className="btn-gold whitespace-nowrap"
           >
             {loading ? (
@@ -187,9 +187,6 @@ export default function MultiSearchPage() {
           </button>
         </div>
 
-        {tags.length > 0 && tags.length < 2 && (
-          <p className="text-xs text-gray-600">至少需要 2 張卡牌才能搜尋共同賣家</p>
-        )}
       </div>
 
       {/* Error */}
