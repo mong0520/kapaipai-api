@@ -84,6 +84,7 @@ def multi_card_search(card_requests, max_workers=8):
                     entry = seller_by_card[card_name][seller]
                     entry["products"].append({
                         **product,
+                        "card_name": variant.get("card_name", ""),
                         "variant_pack_name": variant.get("pack_name", ""),
                         "variant_rare": variant.get("rare", ""),
                     })
@@ -139,11 +140,15 @@ def multi_card_search(card_requests, max_workers=8):
                     break
 
             total_cost += cost
+            found_names = sorted(set(
+                p.get("card_name", "") for p in sorted_products if p.get("card_name")
+            ))
             cards_info[card_name] = {
                 "total_stock": info["total_stock"],
                 "lowest_price": sorted_products[0]["price"] if sorted_products else 0,
                 "estimated_cost": cost,
                 "products": sorted_products,
+                "found_card_names": found_names,
             }
 
         if all_satisfied:

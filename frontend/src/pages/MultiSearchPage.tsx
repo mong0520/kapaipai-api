@@ -350,7 +350,11 @@ export default function MultiSearchPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-300">{cardName}</span>
+                      <span className="text-sm text-gray-300">
+                        {detail.found_card_names?.length
+                          ? detail.found_card_names.join("、")
+                          : cardName}
+                      </span>
                       <span className="text-xs text-gray-600">
                         x{tags.find((t) => t.name === cardName)?.quantity ?? 1}
                       </span>

@@ -75,6 +75,7 @@ export interface SellerCardDetail {
   lowest_price: number;
   estimated_cost: number;
   products: SellerProductDetail[];
+  found_card_names: string[];
 }
 
 export interface SellerMatch {
