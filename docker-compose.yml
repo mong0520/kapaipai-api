@@ -17,6 +17,7 @@ services:
 
   backend:
     build: ./backend
+    restart: always
     ports:
       - "5001:5001"
     env_file: .env
@@ -29,6 +30,7 @@ services:
 
   frontend:
     build: ./frontend
+    restart: always
     ports:
       - "3000:80"
     depends_on:
