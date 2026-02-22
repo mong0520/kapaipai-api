@@ -510,7 +510,7 @@ export default function MultiSearchPage() {
                           <img
                             src={imgUrl}
                             alt={cardName}
-                            className="w-32 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
+                            className="w-32 object-contain rounded border border-vault-600/50"
                             loading="lazy"
                             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                           />

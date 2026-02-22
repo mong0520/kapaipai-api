@@ -213,7 +213,7 @@ export default function WatchlistPage() {
                             src={cardImageUrl(item)!}
                             alt={item.card_name}
                             loading="lazy"
-                            className="w-20 rounded transition-transform duration-200 hover:scale-150 cursor-pointer"
+                            className="w-20 rounded"
                             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                           />
                         )}

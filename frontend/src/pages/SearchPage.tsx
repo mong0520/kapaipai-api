@@ -185,7 +185,7 @@ export default function SearchPage() {
                       className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
                     />
                   </th>
-                  <th className="table-header w-14">卡圖</th>
+                  <th className="table-header">卡圖</th>
                   <th className="table-header">卡牌名稱</th>
                   <th className="table-header">擴充包</th>
                   <th className="table-header">編號</th>
@@ -222,7 +222,7 @@ export default function SearchPage() {
                         <img
                           src={cardImageUrl(card)}
                           alt={card.card_name}
-                          className="w-80 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
+                          className="w-32 object-contain rounded border border-vault-600/50"
                           loading="lazy"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                         />
