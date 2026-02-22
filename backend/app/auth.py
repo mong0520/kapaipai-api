@@ -8,7 +8,7 @@ from flask import request, jsonify, g, current_app
 
 def generate_jwt(user_id: int) -> str:
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "iat": datetime.now(timezone.utc),
         "exp": datetime.now(timezone.utc) + timedelta(
             hours=current_app.config["JWT_EXPIRATION_HOURS"]
@@ -37,7 +37,7 @@ def login_required(f):
             return jsonify({"error": "Invalid token"}), 401
 
         from app.models import User
-        user = User.query.get(payload["sub"])
+        user = User.query.get(int(payload["sub"]))
         if not user:
             return jsonify({"error": "User not found"}), 401
 
