@@ -78,4 +78,5 @@ def generate_line_code():
     """Generate a 6-digit verification code for LINE binding."""
     from app.services.line_binding import generate_binding_code
     code = generate_binding_code(g.current_user.id)
-    return jsonify({"code": code})
+    bot_url = current_app.config.get("LINE_BOT_ADD_FRIEND_URL", "")
+    return jsonify({"code": code, "bot_url": bot_url})

@@ -128,7 +128,7 @@ export async function updateLineBinding(line_user_id: string) {
 }
 
 export async function generateLineBindingCode() {
-  return request<{ code: string }>("/auth/line-binding/code", {
+  return request<{ code: string; bot_url: string }>("/auth/line-binding/code", {
     method: "POST",
   });
 }
