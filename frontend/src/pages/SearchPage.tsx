@@ -222,7 +222,7 @@ export default function SearchPage() {
                         <img
                           src={cardImageUrl(card)}
                           alt={card.card_name}
-                          className="w-56 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
+                          className="w-80 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
                           loading="lazy"
                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                         />
