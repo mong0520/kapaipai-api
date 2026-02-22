@@ -54,7 +54,7 @@ def products():
         "data": {
             "products": buyable,
             "total": data["total"],
-            "buyable_count": len(buyable),
+            "buyable_count": sum(p["stock"] for p in buyable),
             "lowest_price": min(prices) if prices else None,
             "avg_price": round(sum(prices) / len(prices), 2) if prices else None,
         }

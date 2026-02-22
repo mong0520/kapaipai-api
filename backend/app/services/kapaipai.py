@@ -115,7 +115,7 @@ def get_price_summary(card_key: str, rare: str,
 
     return {
         "total_count": total,
-        "buyable_count": len(buyable),
+        "buyable_count": sum(p["stock"] for p in buyable),
         "lowest_price": lowest,
         "avg_price": round(avg, 2) if avg else None,
         "products": buyable,
