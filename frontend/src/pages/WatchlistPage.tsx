@@ -161,7 +161,7 @@ export default function WatchlistPage() {
                   <th className="table-header">稀有度</th>
                   <th className="table-header text-right">目標價</th>
                   <th className="table-header text-right">目前最低</th>
-                  <th className="table-header text-right">可購數</th>
+                  <th className="table-header text-right">賣家數</th>
                   <th className="table-header">最後檢查</th>
                   <th className="table-header text-center">操作</th>
                 </tr>
