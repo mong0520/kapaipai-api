@@ -7,7 +7,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (googleCredential: string) => Promise<void>;
   logout: () => void;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<AuthUser | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -59,15 +59,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }, []);
 
-  const refreshUser = useCallback(async () => {
-    if (!token) return;
+  const refreshUser = useCallback(async (): Promise<AuthUser | null> => {
+    if (!token) return null;
     const resp = await fetch("/api/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (resp.ok) {
       const data = await resp.json();
       setUser(data.user);
+      return data.user;
     }
+    return null;
   }, [token]);
 
   const logout = useCallback(() => {

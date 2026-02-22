@@ -37,7 +37,13 @@ export default function LineBindingPage() {
     if (!code) return;
 
     pollRef.current = setInterval(async () => {
-      await refreshUser();
+      const updated = await refreshUser();
+      if (updated?.line_user_id) {
+        setCode("");
+        setCountdown(0);
+        stopPolling();
+        setToast("LINE 綁定成功！");
+      }
     }, 2000);
 
     return () => {
@@ -46,17 +52,7 @@ export default function LineBindingPage() {
         pollRef.current = null;
       }
     };
-  }, [code, refreshUser]);
-
-  // Detect binding success during polling
-  useEffect(() => {
-    if (code && user?.line_user_id) {
-      setCode("");
-      setCountdown(0);
-      stopPolling();
-      setToast("LINE 綁定成功！");
-    }
-  }, [user?.line_user_id, code, stopPolling]);
+  }, [code, refreshUser, stopPolling]);
 
   async function handleGenerate() {
     setGenerating(true);
