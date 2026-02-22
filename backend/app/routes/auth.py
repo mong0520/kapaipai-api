@@ -57,3 +57,16 @@ def google_login():
 def me():
     """Return the current authenticated user."""
     return jsonify({"user": g.current_user.to_dict()})
+
+
+@auth_bp.route("/line-binding", methods=["PATCH"])
+@login_required
+def bind_line():
+    """Bind or update the user's LINE user ID."""
+    body = request.get_json()
+    line_user_id = body.get("line_user_id", "").strip() if body else ""
+
+    g.current_user.line_user_id = line_user_id or None
+    db.session.commit()
+
+    return jsonify({"user": g.current_user.to_dict()})

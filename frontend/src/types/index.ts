@@ -5,6 +5,7 @@ export interface AuthUser {
   nickname: string;
   avatar_url: string;
   is_admin: boolean;
+  line_user_id: string | null;
   created_at: string;
 }
 

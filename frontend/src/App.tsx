@@ -7,6 +7,7 @@ import SearchPage from "./pages/SearchPage";
 import MultiSearchPage from "./pages/MultiSearchPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import HistoryPage from "./pages/HistoryPage";
+import LineBindingPage from "./pages/LineBindingPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/multi-search" element={<MultiSearchPage />} />
               <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/history" element={<HistoryPage />} />
+              <Route path="/line-binding" element={<LineBindingPage />} />
             </Route>
           </Routes>
         </AuthProvider>

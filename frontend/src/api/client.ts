@@ -119,6 +119,14 @@ export async function multiCardSearch(cards: MultiSearchCardRequest[]) {
   });
 }
 
+// LINE binding
+export async function updateLineBinding(line_user_id: string) {
+  return request<{ user: import("../types").AuthUser }>("/auth/line-binding", {
+    method: "PATCH",
+    body: JSON.stringify({ line_user_id }),
+  });
+}
+
 // Notifications
 export async function getNotifications(limit = 50) {
   return request<{ data: NotificationRecord[] }>(
