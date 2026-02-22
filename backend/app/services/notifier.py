@@ -13,15 +13,13 @@ def send_line_message(message: str, user_id: str | None = None,
 
     Args:
         message: Text message to send.
-        user_id: LINE user ID. If None, uses LINE_USER_ID from config.
+        user_id: LINE user ID (from user's LINE binding).
         image_url: Optional image URL to send before the text message.
 
     Returns:
         True if sent successfully, False otherwise.
     """
     token = current_app.config["LINE_CHANNEL_ACCESS_TOKEN"]
-    if not user_id:
-        user_id = current_app.config["LINE_USER_ID"]
 
     if not token or not user_id:
         logger.error("LINE credentials not configured")

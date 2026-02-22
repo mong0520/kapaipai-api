@@ -18,7 +18,6 @@ class Config:
 
     LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "")
     LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "")
-    LINE_USER_ID = os.getenv("LINE_USER_ID", "")
 
     PRICE_CHECK_INTERVAL_MINUTES = int(os.getenv("PRICE_CHECK_INTERVAL_MINUTES", "10"))
 

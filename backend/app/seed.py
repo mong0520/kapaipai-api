@@ -1,6 +1,4 @@
 """Seed default user into the database."""
-import os
-
 from app import create_app
 from app.extensions import db
 from app.models import User
@@ -17,7 +15,6 @@ def seed():
 
         user = User(
             nickname="default",
-            line_user_id=os.getenv("LINE_USER_ID", ""),
             is_admin=True,
         )
         db.session.add(user)
