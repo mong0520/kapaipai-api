@@ -63,15 +63,9 @@ def _maybe_notify(item: WatchlistItem, current_price: int):
         )
         return
 
-    pack_info = f"{item.pack_name} ({item.pack_id})" if item.pack_id else ""
     message = (
-        f"🔔 Price Alert!\n"
-        f"Card: {item.card_name}\n"
-        f"Pack: {pack_info}\n"
-        f"Rare: {item.rare}\n"
-        f"Current Price: {current_price} TWD\n"
-        f"Target Price: {item.target_price} TWD\n"
-        f"💰 Price has reached your target!"
+        f"你感興趣的卡片 {item.card_name} 已經到達目標價 "
+        f"${item.target_price} 囉，現在只要 ${current_price}，趕快去看看吧"
     )
 
     # Get LINE user_id from the user record
