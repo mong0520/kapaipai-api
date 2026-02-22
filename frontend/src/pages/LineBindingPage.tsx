@@ -34,7 +34,7 @@ export default function LineBindingPage() {
 
   // Poll for binding status when code is active
   useEffect(() => {
-    if (!code || countdown <= 0) return;
+    if (!code) return;
 
     pollRef.current = setInterval(async () => {
       await refreshUser();
@@ -46,7 +46,7 @@ export default function LineBindingPage() {
         pollRef.current = null;
       }
     };
-  }, [code, countdown, refreshUser]);
+  }, [code, refreshUser]);
 
   // Detect binding success during polling
   useEffect(() => {
