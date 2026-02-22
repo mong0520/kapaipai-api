@@ -19,10 +19,10 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="font-display font-bold text-2xl tracking-wide text-gray-100">
-            KAPAIPAI
+            卡拍拍
           </h1>
-          <span className="text-xs font-display tracking-[0.2em] text-gold-500/70 uppercase">
-            Price Vault
+          <span className="text-xs font-display tracking-[0.2em] text-gold-500/70">
+            非官方查價器
           </span>
         </div>
 

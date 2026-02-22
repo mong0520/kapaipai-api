@@ -80,10 +80,10 @@ export default function Layout() {
           </div>
           <div>
             <h1 className="font-display font-bold text-lg tracking-wide text-gray-100 leading-none">
-              KAPAIPAI
+              卡拍拍
             </h1>
-            <span className="text-[10px] font-display tracking-[0.2em] text-gold-500/70 uppercase">
-              Price Vault
+            <span className="text-[10px] font-display tracking-[0.2em] text-gold-500/70">
+              非官方查價器
             </span>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function Layout() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
           </button>
-          <span className="font-display font-bold tracking-wide text-gray-100">KAPAIPAI</span>
+          <span className="font-display font-bold tracking-wide text-gray-100">卡拍拍非官方查價器</span>
         </header>
 
         {/* Page content */}
