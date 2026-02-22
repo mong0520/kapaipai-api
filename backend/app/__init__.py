@@ -16,11 +16,13 @@ def create_app(config_class=Config):
     from app.routes.cards import cards_bp
     from app.routes.watchlist import watchlist_bp
     from app.routes.notifications import notifications_bp
+    from app.routes.line import line_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(cards_bp, url_prefix="/api/cards")
     app.register_blueprint(watchlist_bp, url_prefix="/api/watchlist")
     app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
+    app.register_blueprint(line_bp, url_prefix="/api/line")
 
     from app.scheduler import init_scheduler
     init_scheduler(app)

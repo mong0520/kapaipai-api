@@ -127,6 +127,12 @@ export async function updateLineBinding(line_user_id: string) {
   });
 }
 
+export async function generateLineBindingCode() {
+  return request<{ code: string }>("/auth/line-binding/code", {
+    method: "POST",
+  });
+}
+
 // Notifications
 export async function getNotifications(limit = 50) {
   return request<{ data: NotificationRecord[] }>(

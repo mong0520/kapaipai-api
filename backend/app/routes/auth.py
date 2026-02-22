@@ -70,3 +70,12 @@ def bind_line():
     db.session.commit()
 
     return jsonify({"user": g.current_user.to_dict()})
+
+
+@auth_bp.route("/line-binding/code", methods=["POST"])
+@login_required
+def generate_line_code():
+    """Generate a 6-digit verification code for LINE binding."""
+    from app.services.line_binding import generate_binding_code
+    code = generate_binding_code(g.current_user.id)
+    return jsonify({"code": code})
