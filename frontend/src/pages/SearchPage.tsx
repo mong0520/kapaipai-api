@@ -86,7 +86,7 @@ export default function SearchPage() {
       {/* Page header */}
       <div>
         <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
-          卡牌搜尋
+          單卡搜尋
         </h2>
         <p className="text-sm text-gray-500 mt-1">
           搜尋寶可夢卡牌並加入到價監控

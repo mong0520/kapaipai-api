@@ -153,7 +153,7 @@ export default function WatchlistPage() {
             </svg>
           </div>
           <p className="text-gray-500">尚未加入任何監控卡牌</p>
-          <p className="text-xs text-gray-600 mt-1">前往「卡牌搜尋」新增你想監控的卡牌</p>
+          <p className="text-xs text-gray-600 mt-1">前往「單卡搜尋」新增你想監控的卡牌</p>
         </div>
       ) : (
         <div className="card-frame animate-fade-in">
