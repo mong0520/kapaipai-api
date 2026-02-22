@@ -24,4 +24,4 @@ class Config:
 
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", os.getenv("SECRET_KEY", "dev-secret-key"))
-    JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", "24"))
+    JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", "720"))
