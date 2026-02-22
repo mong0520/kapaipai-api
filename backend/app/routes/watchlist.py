@@ -1,22 +1,22 @@
 """Watchlist CRUD routes."""
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 
 from app.extensions import db
 from app.models import WatchlistItem, User
 from app.services.price_checker import check_single_item
+from app.auth import login_required
 
 watchlist_bp = Blueprint("watchlist", __name__)
 
-DEFAULT_USER_ID = 1  # hardcoded until auth is implemented
-
 
 @watchlist_bp.route("", methods=["GET"])
+@login_required
 def list_items():
     """List all watchlist items with latest price snapshot.
 
     GET /api/watchlist
     """
-    items = WatchlistItem.query.filter_by(user_id=DEFAULT_USER_ID).order_by(
+    items = WatchlistItem.query.filter_by(user_id=g.current_user.id).order_by(
         WatchlistItem.created_at.desc()
     ).all()
 
@@ -26,6 +26,7 @@ def list_items():
 
 
 @watchlist_bp.route("", methods=["POST"])
+@login_required
 def add_items():
     """Add item(s) to watchlist.
 
@@ -46,7 +47,7 @@ def add_items():
 
         # Check for duplicate
         existing = WatchlistItem.query.filter_by(
-            user_id=DEFAULT_USER_ID,
+            user_id=g.current_user.id,
             card_key=item_data["card_key"],
             rare=item_data["rare"],
             pack_id=item_data.get("pack_id"),
@@ -60,7 +61,7 @@ def add_items():
             continue
 
         item = WatchlistItem(
-            user_id=DEFAULT_USER_ID,
+            user_id=g.current_user.id,
             card_key=item_data["card_key"],
             card_name=item_data["card_name"],
             pack_id=item_data.get("pack_id"),
@@ -81,13 +82,14 @@ def add_items():
 
 
 @watchlist_bp.route("/<int:item_id>", methods=["PATCH"])
+@login_required
 def update_item(item_id):
     """Update target_price or is_active.
 
     PATCH /api/watchlist/:id
     Body: { "target_price": 100 } or { "is_active": false }
     """
-    item = WatchlistItem.query.filter_by(id=item_id, user_id=DEFAULT_USER_ID).first()
+    item = WatchlistItem.query.filter_by(id=item_id, user_id=g.current_user.id).first()
     if not item:
         return jsonify({"error": "Item not found"}), 404
 
@@ -103,12 +105,13 @@ def update_item(item_id):
 
 
 @watchlist_bp.route("/<int:item_id>", methods=["DELETE"])
+@login_required
 def delete_item(item_id):
     """Remove item from watchlist.
 
     DELETE /api/watchlist/:id
     """
-    item = WatchlistItem.query.filter_by(id=item_id, user_id=DEFAULT_USER_ID).first()
+    item = WatchlistItem.query.filter_by(id=item_id, user_id=g.current_user.id).first()
     if not item:
         return jsonify({"error": "Item not found"}), 404
 
@@ -119,12 +122,13 @@ def delete_item(item_id):
 
 
 @watchlist_bp.route("/<int:item_id>/check", methods=["POST"])
+@login_required
 def check_item(item_id):
     """Manually trigger price check for one item.
 
     POST /api/watchlist/:id/check
     """
-    item = WatchlistItem.query.filter_by(id=item_id, user_id=DEFAULT_USER_ID).first()
+    item = WatchlistItem.query.filter_by(id=item_id, user_id=g.current_user.id).first()
     if not item:
         return jsonify({"error": "Item not found"}), 404
 

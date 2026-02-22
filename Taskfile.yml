@@ -53,6 +53,15 @@ tasks:
     cmds:
       - docker compose restart {{.CLI_ARGS}}
 
+  env-sync:
+    desc: Sync .env to EC2
+    vars:
+      SSH_KEY: ~/.ssh/aws-tpe.pem
+      SSH_HOST: ubuntu@43.213.132.120
+      REMOTE_DIR: /home/ubuntu/git/kapaipai-api
+    cmds:
+      - scp -i {{.SSH_KEY}} .env {{.SSH_HOST}}:{{.REMOTE_DIR}}/.env
+
   deploy:
     desc: Deploy to EC2 via git pull + docker compose
     vars:

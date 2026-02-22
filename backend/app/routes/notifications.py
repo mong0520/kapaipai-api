@@ -1,14 +1,14 @@
 """Notification history routes."""
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 
 from app.models import Notification, WatchlistItem
+from app.auth import login_required
 
 notifications_bp = Blueprint("notifications", __name__)
 
-DEFAULT_USER_ID = 1
-
 
 @notifications_bp.route("", methods=["GET"])
+@login_required
 def list_notifications():
     """Get notification history.
 
@@ -19,7 +19,7 @@ def list_notifications():
     notifications = (
         Notification.query
         .join(WatchlistItem)
-        .filter(WatchlistItem.user_id == DEFAULT_USER_ID)
+        .filter(WatchlistItem.user_id == g.current_user.id)
         .order_by(Notification.sent_at.desc())
         .limit(limit)
         .all()

@@ -12,10 +12,12 @@ def create_app(config_class=Config):
     CORS(app)
     db.init_app(app)
 
+    from app.routes.auth import auth_bp
     from app.routes.cards import cards_bp
     from app.routes.watchlist import watchlist_bp
     from app.routes.notifications import notifications_bp
 
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(cards_bp, url_prefix="/api/cards")
     app.register_blueprint(watchlist_bp, url_prefix="/api/watchlist")
     app.register_blueprint(notifications_bp, url_prefix="/api/notifications")

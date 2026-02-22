@@ -3,11 +3,13 @@ from flask import Blueprint, jsonify, request
 
 from app.services.kapaipai import search_cards, fetch_products, filter_buyable
 from app.services.multi_search import multi_card_search
+from app.auth import login_required
 
 cards_bp = Blueprint("cards", __name__)
 
 
 @cards_bp.route("/search")
+@login_required
 def search():
     """Search cards by name.
 
@@ -26,6 +28,7 @@ def search():
 
 
 @cards_bp.route("/products")
+@login_required
 def products():
     """Get product listings for a specific card variant.
 
@@ -59,6 +62,7 @@ def products():
 
 
 @cards_bp.route("/multi-search", methods=["POST"])
+@login_required
 def multi_search():
     """Find sellers who have ALL specified cards with sufficient stock.
 

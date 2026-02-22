@@ -18,6 +18,7 @@ def seed():
         user = User(
             nickname="default",
             line_user_id=os.getenv("LINE_USER_ID", ""),
+            is_admin=True,
         )
         db.session.add(user)
         db.session.commit()

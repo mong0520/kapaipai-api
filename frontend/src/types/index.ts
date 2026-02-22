@@ -1,3 +1,13 @@
+export interface AuthUser {
+  id: number;
+  google_sso_id: string;
+  email: string;
+  nickname: string;
+  avatar_url: string;
+  is_admin: boolean;
+  created_at: string;
+}
+
 export interface CardVariant {
   card_key: string;
   card_name: string;

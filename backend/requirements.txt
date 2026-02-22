@@ -6,3 +6,5 @@ psycopg2-binary>=2.9
 alembic>=1.13
 apscheduler>=3.10,<4.0
 requests>=2.31
+PyJWT>=2.8
+google-auth>=2.29
