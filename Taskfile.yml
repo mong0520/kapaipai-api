@@ -57,7 +57,7 @@ tasks:
     desc: Deploy to EC2 via git pull + docker compose
     vars:
       SSH_KEY: ~/.ssh/aws-tpe.pem
-      SSH_HOST: ubuntu@43.213.67.238
+      SSH_HOST: ubuntu@43.213.132.120
       REMOTE_DIR: /home/ubuntu/git/kapaipai-api
     cmds:
       - ssh -i {{.SSH_KEY}} {{.SSH_HOST}} "cd {{.REMOTE_DIR}} && git pull && docker compose up -d --build"
