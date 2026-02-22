@@ -84,6 +84,7 @@ task db-revision # create new migration (pass message as arg)
 task seed        # seed default user
 task fe-dev      # frontend dev server (npm run dev)
 task be-dev      # backend dev server (flask run)
+task deploy      # deploy to EC2 via SSH (git pull + docker compose up --build)
 ```
 
 ## Environment Variables (.env)

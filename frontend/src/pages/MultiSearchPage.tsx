@@ -360,7 +360,7 @@ export default function MultiSearchPage() {
                           <img
                             src={imgUrl}
                             alt={cardName}
-                            className="w-32 object-contain rounded border border-vault-600/50"
+                            className="w-32 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
                             loading="lazy"
                             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                           />
@@ -409,7 +409,7 @@ export default function MultiSearchPage() {
                             <img
                               src={`https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(product.card_key)}/${encodeURIComponent(product.pack_id)}/${encodeURIComponent(product.pack_card_id)}/${encodeURIComponent(product.variant_rare.split(", ")[0])}.jpg`}
                               alt={product.card_name}
-                              className="w-24 object-contain rounded border border-vault-600/50"
+                              className="w-24 object-contain rounded border border-vault-600/50 transition-transform duration-200 hover:scale-150 cursor-pointer"
                               loading="lazy"
                               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                             />
