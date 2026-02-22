@@ -146,7 +146,7 @@ export default function LineBindingPage() {
             </div>
             <div>
               <p className="text-gray-200 font-medium">LINE 已綁定</p>
-              <p className="text-xs text-gray-500 font-mono">{user!.line_user_id!.slice(0, 10)}...</p>
+              <p className="text-sm text-gray-400">{user!.line_display_name || user!.line_user_id}</p>
             </div>
           </div>
           <p className="text-sm text-gray-400">

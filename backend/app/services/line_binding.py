@@ -1,10 +1,16 @@
 """LINE account binding via verification code."""
+import logging
 import random
 import string
 from datetime import datetime, timezone, timedelta
 
+import requests
+from flask import current_app
+
 from app.extensions import db
 from app.models import User
+
+logger = logging.getLogger(__name__)
 
 _pending_codes: dict[str, dict] = {}
 
@@ -58,7 +64,28 @@ def verify_binding_code(code: str, line_user_id: str) -> tuple[bool, str]:
         return False, "找不到對應的使用者"
 
     user.line_user_id = line_user_id
+    user.line_display_name = _fetch_line_display_name(line_user_id)
     db.session.commit()
     del _pending_codes[code]
 
-    return True, f"綁定成功！{user.nickname}，之後到價通知會發送到你的 LINE"
+    display = user.line_display_name or user.nickname
+    return True, f"綁定成功！{display}，之後到價通知會發送到你的 LINE"
+
+
+def _fetch_line_display_name(line_user_id: str) -> str | None:
+    """Fetch LINE user display name via the LINE Bot Profile API."""
+    token = current_app.config.get("LINE_CHANNEL_ACCESS_TOKEN", "")
+    if not token:
+        return None
+    try:
+        resp = requests.get(
+            f"https://api.line.me/v2/bot/profile/{line_user_id}",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=5,
+        )
+        if resp.status_code == 200:
+            return resp.json().get("displayName")
+        logger.warning("LINE profile API error [%d]: %s", resp.status_code, resp.text)
+    except requests.RequestException as e:
+        logger.warning("LINE profile API request failed: %s", e)
+    return None

@@ -67,6 +67,8 @@ def bind_line():
     line_user_id = body.get("line_user_id", "").strip() if body else ""
 
     g.current_user.line_user_id = line_user_id or None
+    if not line_user_id:
+        g.current_user.line_display_name = None
     db.session.commit()
 
     return jsonify({"user": g.current_user.to_dict()})
