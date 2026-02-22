@@ -7,6 +7,12 @@ import {
   checkWatchlistItem,
 } from "../api/client";
 
+function cardImageUrl(item: WatchlistItem): string | null {
+  if (!item.card_key || !item.pack_id || !item.pack_card_id || !item.rare) return null;
+  const rare = item.rare.split(", ")[0];
+  return `https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(item.card_key)}/${encodeURIComponent(item.pack_id)}/${encodeURIComponent(item.pack_card_id)}/${encodeURIComponent(rare)}.jpg`;
+}
+
 export default function WatchlistPage() {
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,6 +162,7 @@ export default function WatchlistPage() {
               <thead>
                 <tr className="border-b border-vault-700/30">
                   <th className="table-header">狀態</th>
+                  <th className="table-header">卡圖</th>
                   <th className="table-header">卡牌名稱</th>
                   <th className="table-header">擴充包</th>
                   <th className="table-header">稀有度</th>
@@ -197,6 +204,19 @@ export default function WatchlistPage() {
                             {item.is_active ? "啟用" : "暫停"}
                           </span>
                         </button>
+                      </td>
+
+                      {/* Card image */}
+                      <td className="table-cell">
+                        {cardImageUrl(item) && (
+                          <img
+                            src={cardImageUrl(item)!}
+                            alt={item.card_name}
+                            loading="lazy"
+                            className="w-20 rounded transition-transform duration-200 hover:scale-150 cursor-pointer"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                        )}
                       </td>
 
                       {/* Card name */}

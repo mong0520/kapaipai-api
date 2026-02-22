@@ -7,12 +7,14 @@ from flask import current_app
 logger = logging.getLogger(__name__)
 
 
-def send_line_message(message: str, user_id: str | None = None) -> bool:
+def send_line_message(message: str, user_id: str | None = None,
+                      image_url: str | None = None) -> bool:
     """Send a push message via LINE Messaging API.
 
     Args:
         message: Text message to send.
         user_id: LINE user ID. If None, uses LINE_USER_ID from config.
+        image_url: Optional image URL to send before the text message.
 
     Returns:
         True if sent successfully, False otherwise.
@@ -30,9 +32,18 @@ def send_line_message(message: str, user_id: str | None = None) -> bool:
         "Content-Type": "application/json",
         "Authorization": f"Bearer {token}",
     }
+    messages = []
+    if image_url:
+        messages.append({
+            "type": "image",
+            "originalContentUrl": image_url,
+            "previewImageUrl": image_url,
+        })
+    messages.append({"type": "text", "text": message})
+
     payload = {
         "to": user_id,
-        "messages": [{"type": "text", "text": message}],
+        "messages": messages,
     }
 
     try:

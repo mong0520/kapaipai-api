@@ -1,4 +1,6 @@
 """Proxy service for kapaipai.tw API - ported from legacy/check_price.py."""
+from urllib.parse import quote
+
 import requests
 
 BASE_URL = "https://trade.kapaipai.tw/api/product/listProduct"
@@ -15,6 +17,21 @@ HEADERS = {
     "Referer": "https://trade.kapaipai.tw/card/pkmtw",
     "Accept-Language": "zh-TW,zh-Hant;q=0.9",
 }
+
+STATIC_BASE = "https://static.kapaipai.tw/image/card/pkmtw"
+
+
+def card_image_url(card_key: str, pack_id: str | None,
+                   pack_card_id: str | None, rare: str) -> str | None:
+    """Build the CDN image URL for a card variant."""
+    if not card_key or not pack_id or not pack_card_id or not rare:
+        return None
+    first_rare = rare.split(", ")[0]
+    return (
+        f"{STATIC_BASE}/{quote(card_key)}/{quote(pack_id)}"
+        f"/{quote(pack_card_id)}/{quote(first_rare)}.jpg"
+    )
+
 
 CONDITION_MAP = {
     "perfect": "完美品",

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 from app.extensions import db
 from app.models import WatchlistItem, PriceSnapshot, Notification
-from app.services.kapaipai import get_price_summary
+from app.services.kapaipai import get_price_summary, card_image_url
 from app.services.notifier import send_line_message
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,8 @@ def _maybe_notify(item: WatchlistItem, current_price: int):
 
     # Get LINE user_id from the user record
     line_user_id = item.user.line_user_id if item.user else None
-    success = send_line_message(message, user_id=line_user_id)
+    img_url = card_image_url(item.card_key, item.pack_id, item.pack_card_id, item.rare)
+    success = send_line_message(message, user_id=line_user_id, image_url=img_url)
 
     notif = Notification(
         watchlist_item_id=item.id,
