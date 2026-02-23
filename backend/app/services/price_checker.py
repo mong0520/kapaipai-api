@@ -36,12 +36,14 @@ def check_single_item(item: WatchlistItem) -> PriceSnapshot | None:
 
     # Check if we should notify
     if summary["lowest_price"] is not None and summary["lowest_price"] <= item.target_price:
-        _maybe_notify(item, summary["lowest_price"])
+        # Get the lowest-priced product for the link
+        lowest_product = summary["products"][0] if summary["products"] else None
+        _maybe_notify(item, summary["lowest_price"], lowest_product)
 
     return snapshot
 
 
-def _maybe_notify(item: WatchlistItem, current_price: int):
+def _maybe_notify(item: WatchlistItem, current_price: int, lowest_product: dict | None = None):
     """Send notification if not already notified at this price."""
     # Check last notification for this item
     last_notif = (
@@ -63,10 +65,17 @@ def _maybe_notify(item: WatchlistItem, current_price: int):
         )
         return
 
+    # Build product link if we have the lowest product
+    product_link = None
+    if lowest_product and lowest_product.get("id") and lowest_product.get("seller_id"):
+        product_link = f"https://redirect.kapaipai.tw/shop/{lowest_product['seller_id']}/{lowest_product['id']}"
+
     message = (
         f"你感興趣的卡片 {item.card_name} 已經到達目標價 "
         f"${item.target_price} 囉，現在只要 ${current_price}，趕快去看看吧"
     )
+    if product_link:
+        message += f"\n\n商品連結：{product_link}"
 
     # Get LINE user_id from the user record
     line_user_id = item.user.line_user_id if item.user else None

@@ -104,6 +104,8 @@ def filter_buyable(products: list[dict], include_flawed: bool = False) -> list[d
         if not include_flawed and p["condition"] != "perfect":
             continue
         results.append({
+            "id": p["id"],
+            "seller_id": p["sellerId"],
             "price": int(p["price"]),
             "stock": p["stock"],
             "condition": p["condition"],
