@@ -87,22 +87,15 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
             "layout": "vertical",
             "contents": [
                 {
-                    "type": "box",
-                    "layout": "vertical",
-                    "contents": [
-                        {
-                            "type": "image",
-                            "url": image_url or "https://via.placeholder.com/800x600?text=No+Image",
-                            "aspectRatio": "2:3",
-                            "aspectMode": "fit",
-                            "size": "full",
-                        }
-                    ],
-                    "paddingAll": "5%",
+                    "type": "image",
+                    "url": image_url or "https://via.placeholder.com/800x600?text=No+Image",
+                    "aspectRatio": "2:3",
+                    "aspectMode": "fit",
+                    "size": "full",
                 },
                 {
                     "type": "text",
-                    "text": "🎉 到價通知",
+                    "text": "🎉 [卡拍拍]到價通知",
                     "weight": "bold",
                     "size": "sm",
                     "color": "#1DB446",
@@ -208,7 +201,7 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
         "messages": [
             {
                 "type": "flex",
-                "altText": f"🎉 到價通知：{card_name} 目前 ${current_price}！",
+                "altText": f"🎉 [卡拍拍]到價通知：{card_name} 目前 ${current_price}！",
                 "contents": flex_content,
             }
         ],
