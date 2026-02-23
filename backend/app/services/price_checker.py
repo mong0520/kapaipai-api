@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from app.extensions import db
 from app.models import WatchlistItem, PriceSnapshot, Notification
 from app.services.kapaipai import get_price_summary, card_image_url
-from app.services.notifier import send_line_message
+from app.services.notifier import send_price_alert_flex
 
 logger = logging.getLogger(__name__)
 
@@ -70,17 +70,27 @@ def _maybe_notify(item: WatchlistItem, current_price: int, lowest_product: dict 
     if lowest_product and lowest_product.get("id") and lowest_product.get("seller_id"):
         product_link = f"https://redirect.kapaipai.tw/shop/{lowest_product['seller_id']}/{lowest_product['id']}"
 
+    # Get LINE user_id from the user record
+    line_user_id = item.user.line_user_id if item.user else None
+    img_url = card_image_url(item.card_key, item.pack_id, item.pack_card_id, item.rare)
+
+    # Send Flex Message with card-style notification
+    success = send_price_alert_flex(
+        card_name=item.card_name,
+        target_price=item.target_price,
+        current_price=current_price,
+        image_url=img_url,
+        product_url=product_link,
+        user_id=line_user_id,
+    )
+
+    # Keep message for notification record
     message = (
         f"你感興趣的卡片 {item.card_name} 已經到達目標價 "
         f"${item.target_price} 囉，現在只要 ${current_price}，趕快去看看吧"
     )
     if product_link:
         message += f"\n\n商品連結：{product_link}"
-
-    # Get LINE user_id from the user record
-    line_user_id = item.user.line_user_id if item.user else None
-    img_url = card_image_url(item.card_key, item.pack_id, item.pack_card_id, item.rare)
-    success = send_line_message(message, user_id=line_user_id, image_url=img_url)
 
     notif = Notification(
         watchlist_item_id=item.id,
