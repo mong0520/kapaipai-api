@@ -95,7 +95,7 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
             "contents": [
                 {
                     "type": "text",
-                    "text": "🎉 價格通知",
+                    "text": "🎉 到價通知",
                     "weight": "bold",
                     "size": "sm",
                     "color": "#1DB446",
@@ -200,7 +200,7 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
         "messages": [
             {
                 "type": "flex",
-                "altText": f"🎉 {card_name} 已到達目標價 ${target_price}！",
+                "altText": f"🎉 到價通知：{card_name} 目前 ${current_price}！",
                 "contents": flex_content,
             }
         ],
