@@ -82,23 +82,31 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
     # Build Flex Message
     flex_content = {
         "type": "bubble",
-        "hero": {
-            "type": "image",
-            "url": image_url or "https://via.placeholder.com/800x600?text=No+Image",
-            "size": "full",
-            "aspectRatio": "2:3",
-            "aspectMode": "fit",
-        },
         "body": {
             "type": "box",
             "layout": "vertical",
             "contents": [
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "image",
+                            "url": image_url or "https://via.placeholder.com/800x600?text=No+Image",
+                            "aspectRatio": "2:3",
+                            "aspectMode": "fit",
+                            "size": "full",
+                        }
+                    ],
+                    "paddingAll": "5%",
+                },
                 {
                     "type": "text",
                     "text": "🎉 到價通知",
                     "weight": "bold",
                     "size": "sm",
                     "color": "#1DB446",
+                    "margin": "md",
                 },
                 {
                     "type": "text",
