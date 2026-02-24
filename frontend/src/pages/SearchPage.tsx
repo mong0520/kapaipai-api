@@ -69,11 +69,13 @@ export default function SearchPage() {
 
   function toggleRare(rare: string) {
     setRareFilter((prev) => {
-      const current = prev ?? new Set(uniqueRares);
-      const next = new Set(current);
+      // First click: show only this rarity
+      if (!prev) return new Set([rare]);
+      const next = new Set(prev);
       if (next.has(rare)) {
         next.delete(rare);
-        if (next.size === 0) return prev;
+        // If empty, reset to show all
+        if (next.size === 0) return null;
       } else {
         next.add(rare);
       }
@@ -238,7 +240,9 @@ export default function SearchPage() {
       {results.length > 0 && uniqueRares.length > 1 && (
         <div className="card-frame px-4 py-3 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-300 font-medium">稀有度篩選</span>
+            <span className="text-sm text-gray-300 font-medium">
+              稀有度篩選
+            </span>
             <span className="text-xs text-gray-600">
               {uniqueRares.length} 種
             </span>

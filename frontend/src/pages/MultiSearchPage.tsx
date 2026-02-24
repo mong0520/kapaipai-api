@@ -29,13 +29,13 @@ export default function MultiSearchPage() {
   );
   const [searched, setSearched] = useState(false);
   // Pack filter: cardName -> Set of selected pack_id (absent = all selected)
-  const [packFilters, setPackFilters] = useState<
-    Record<string, Set<string>>
-  >({});
+  const [packFilters, setPackFilters] = useState<Record<string, Set<string>>>(
+    {},
+  );
   // Rarity filter: cardName -> Set of selected rare strings (absent = all selected)
-  const [rareFilters, setRareFilters] = useState<
-    Record<string, Set<string>>
-  >({});
+  const [rareFilters, setRareFilters] = useState<Record<string, Set<string>>>(
+    {},
+  );
 
   function addTag() {
     const name = inputValue.trim();
@@ -142,12 +142,17 @@ export default function MultiSearchPage() {
 
   function toggleRare(cardName: string, rare: string) {
     setRareFilters((prev) => {
-      const allRares = raresByCard[cardName] || [];
-      const current = prev[cardName] ?? new Set(allRares);
-      const next = new Set(current);
+      // First click on this card: show only this rarity
+      if (!prev[cardName]) return { ...prev, [cardName]: new Set([rare]) };
+      const next = new Set(prev[cardName]);
       if (next.has(rare)) {
         next.delete(rare);
-        if (next.size === 0) return prev;
+        // If empty, reset to show all
+        if (next.size === 0) {
+          const updated = { ...prev };
+          delete updated[cardName];
+          return updated;
+        }
       } else {
         next.add(rare);
       }
@@ -167,8 +172,7 @@ export default function MultiSearchPage() {
 
   function hasActiveFilter(): boolean {
     return (
-      Object.keys(packFilters).length > 0 ||
-      Object.keys(rareFilters).length > 0
+      Object.keys(packFilters).length > 0 || Object.keys(rareFilters).length > 0
     );
   }
 
