@@ -18,6 +18,8 @@ export default function SearchPage() {
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [searched, setSearched] = useState(false);
+  // Pack filter: null = all selected, Set = only selected packs shown
+  const [packFilter, setPackFilter] = useState<Set<string> | null>(null);
   // Rarity filter: null = all selected, Set = only selected rarities shown
   const [rareFilter, setRareFilter] = useState<Set<string> | null>(null);
 
@@ -29,6 +31,7 @@ export default function SearchPage() {
     setError("");
     setSelected(new Set());
     setSearched(true);
+    setPackFilter(null);
     setRareFilter(null);
     try {
       const res = await searchCards(query.trim());
@@ -50,6 +53,17 @@ export default function SearchPage() {
     });
   }
 
+  // Extract unique packs from results
+  const uniquePacks = useMemo(() => {
+    const packs: { pack_id: string; pack_name: string }[] = [];
+    for (const card of results) {
+      if (!packs.some((p) => p.pack_id === card.pack_id)) {
+        packs.push({ pack_id: card.pack_id, pack_name: card.pack_name });
+      }
+    }
+    return packs;
+  }, [results]);
+
   // Extract unique rarities from results
   const uniqueRares = useMemo(() => {
     const rares: string[] = [];
@@ -61,11 +75,34 @@ export default function SearchPage() {
     return rares;
   }, [results]);
 
-  // Filtered results based on rarity selection
+  // Filtered results based on pack + rarity selection (intersection)
   const filteredResults = useMemo(() => {
-    if (!rareFilter) return results;
-    return results.filter((c) => rareFilter.has(c.rare));
-  }, [results, rareFilter]);
+    return results.filter((c) => {
+      if (packFilter && !packFilter.has(c.pack_id)) return false;
+      if (rareFilter && !rareFilter.has(c.rare)) return false;
+      return true;
+    });
+  }, [results, packFilter, rareFilter]);
+
+  function togglePack(packId: string) {
+    setPackFilter((prev) => {
+      // First click: show only this pack
+      if (!prev) return new Set([packId]);
+      const next = new Set(prev);
+      if (next.has(packId)) {
+        next.delete(packId);
+        if (next.size === 0) return null;
+      } else {
+        next.add(packId);
+      }
+      return next;
+    });
+  }
+
+  function isPackSelected(packId: string): boolean {
+    if (!packFilter) return true;
+    return packFilter.has(packId);
+  }
 
   function toggleRare(rare: string) {
     setRareFilter((prev) => {
@@ -236,45 +273,77 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* Rarity filter */}
-      {results.length > 0 && uniqueRares.length > 1 && (
-        <div className="card-frame px-4 py-3 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700 font-medium">
-              稀有度篩選
-            </span>
-            <span className="text-xs text-gray-400">
-              {uniqueRares.length} 種
-            </span>
-            {rareFilter && (
-              <button
-                onClick={() => setRareFilter(null)}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
-              >
-                重設
-              </button>
+      {/* Filters (pack + rarity) */}
+      {results.length > 0 &&
+        (uniquePacks.length > 1 || uniqueRares.length > 1) && (
+          <div className="card-frame px-4 py-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-700 font-medium">篩選</span>
+              <span className="text-xs text-gray-400">
+                {uniquePacks.length} 擴充包 · {uniqueRares.length} 稀有度
+              </span>
+              {(packFilter || rareFilter) && (
+                <button
+                  onClick={() => {
+                    setPackFilter(null);
+                    setRareFilter(null);
+                  }}
+                  className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
+                >
+                  重設
+                </button>
+              )}
+            </div>
+            {/* Pack filter row */}
+            {uniquePacks.length > 1 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] text-gray-400 w-12 shrink-0">
+                  擴充包
+                </span>
+                {uniquePacks.map((pk) => {
+                  const sel = isPackSelected(pk.pack_id);
+                  return (
+                    <button
+                      key={pk.pack_id}
+                      onClick={() => togglePack(pk.pack_id)}
+                      className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                        sel
+                          ? "bg-amber-50 text-amber-700 border border-amber-200"
+                          : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
+                      }`}
+                    >
+                      {pk.pack_name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {/* Rarity filter row */}
+            {uniqueRares.length > 1 && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] text-gray-400 w-12 shrink-0">
+                  稀有度
+                </span>
+                {uniqueRares.map((r) => {
+                  const sel = isRareSelected(r);
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => toggleRare(r)}
+                      className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                        sel
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                          : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {uniqueRares.map((r) => {
-              const sel = isRareSelected(r);
-              return (
-                <button
-                  key={r}
-                  onClick={() => toggleRare(r)}
-                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                    sel
-                      ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                      : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
-                  }`}
-                >
-                  {r}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+        )}
 
       {/* Results */}
       {filteredResults.length > 0 && (
@@ -288,7 +357,7 @@ export default function SearchPage() {
                   {filteredResults.length}
                 </span>{" "}
                 個結果
-                {rareFilter && (
+                {(packFilter || rareFilter) && (
                   <span className="text-gray-400 ml-1">
                     (共 {results.length})
                   </span>
@@ -424,12 +493,14 @@ export default function SearchPage() {
             </svg>
           </div>
           <p className="text-gray-500">
-            {rareFilter
-              ? "篩選後沒有結果，試試放寬稀有度篩選"
+            {packFilter || rareFilter
+              ? "篩選後沒有結果，試試放寬篩選條件"
               : "找不到相關卡牌"}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            {rareFilter ? "點擊「重設」顯示所有結果" : "請嘗試其他關鍵字"}
+            {packFilter || rareFilter
+              ? "點擊「重設」顯示所有結果"
+              : "請嘗試其他關鍵字"}
           </p>
         </div>
       )}
