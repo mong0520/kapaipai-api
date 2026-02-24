@@ -285,7 +285,7 @@ export default function MultiSearchPage() {
       {/* Page header */}
       <div>
         <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
-          多卡搜尋
+          多卡一起買
         </h2>
         <p className="text-sm text-gray-500 mt-1">
           搜尋同時擁有多張指定卡牌的賣家，一次買齊省運費

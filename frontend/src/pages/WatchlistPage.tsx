@@ -217,7 +217,7 @@ export default function WatchlistPage() {
           </div>
           <p className="text-gray-500">尚未加入任何監控卡牌</p>
           <p className="text-xs text-gray-600 mt-1">
-            前往「單卡查價」新增你想監控的卡牌
+            前往「單卡最低價」新增你想監控的卡牌
           </p>
         </div>
       ) : (

@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 const navItems = [
   {
     to: "/",
-    label: "單卡查價",
+    label: "單卡最低價",
     icon: (
       <svg
         className="w-5 h-5"
@@ -24,7 +24,7 @@ const navItems = [
   },
   {
     to: "/multi-search",
-    label: "多卡搜尋",
+    label: "多卡一起買",
     icon: (
       <svg
         className="w-5 h-5"
