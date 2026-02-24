@@ -1,23 +1,18 @@
 import { useState, useMemo } from "react";
-import type { MultiSearchCardRequest, MultiSearchResult, SellerMatch, SellerCardDetail } from "../types";
+import type {
+  MultiSearchCardRequest,
+  MultiSearchResult,
+  SellerMatch,
+  SellerCardDetail,
+} from "../types";
 import { multiCardSearch } from "../api/client";
 
 type SortKey = "total_cost" | "credit" | "order_complete";
 
-interface VariantKey {
-  pack_id: string;
-  pack_card_id: string;
-  rare: string;
-  label: string; // display: "packName (rare)"
-}
-
-function variantId(v: { pack_id: string; pack_card_id: string; rare: string }) {
-  return `${v.pack_id}|${v.pack_card_id}|${v.rare}`;
-}
-
 function cardImageUrlFromDetail(detail: SellerCardDetail): string | null {
   const p = detail.products[0];
-  if (!p?.card_key || !p?.pack_id || !p?.pack_card_id || !p?.variant_rare) return null;
+  if (!p?.card_key || !p?.pack_id || !p?.pack_card_id || !p?.variant_rare)
+    return null;
   const rare = p.variant_rare.split(", ")[0];
   return `https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(p.card_key)}/${encodeURIComponent(p.pack_id)}/${encodeURIComponent(p.pack_card_id)}/${encodeURIComponent(rare)}.jpg`;
 }
@@ -29,10 +24,18 @@ export default function MultiSearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("total_cost");
-  const [expandedSellers, setExpandedSellers] = useState<Set<string>>(new Set());
+  const [expandedSellers, setExpandedSellers] = useState<Set<string>>(
+    new Set(),
+  );
   const [searched, setSearched] = useState(false);
-  // variant filter: cardName -> Set of selected variantId strings (null = all selected)
-  const [variantFilters, setVariantFilters] = useState<Record<string, Set<string>>>({});
+  // Pack filter: cardName -> Set of selected pack_id (absent = all selected)
+  const [packFilters, setPackFilters] = useState<
+    Record<string, Set<string>>
+  >({});
+  // Rarity filter: cardName -> Set of selected rare strings (absent = all selected)
+  const [rareFilters, setRareFilters] = useState<
+    Record<string, Set<string>>
+  >({});
 
   function addTag() {
     const name = inputValue.trim();
@@ -50,8 +53,10 @@ export default function MultiSearchPage() {
   function updateQuantity(index: number, delta: number) {
     setTags(
       tags.map((t, i) =>
-        i === index ? { ...t, quantity: Math.max(1, Math.min(99, t.quantity + delta)) } : t
-      )
+        i === index
+          ? { ...t, quantity: Math.max(1, Math.min(99, t.quantity + delta)) }
+          : t,
+      ),
     );
   }
 
@@ -61,7 +66,8 @@ export default function MultiSearchPage() {
     setError("");
     setSearched(true);
     setExpandedSellers(new Set());
-    setVariantFilters({});
+    setPackFilters({});
+    setRareFilters({});
     try {
       const res = await multiCardSearch(tags);
       setResult(res.data);
@@ -82,21 +88,18 @@ export default function MultiSearchPage() {
     });
   }
 
-  // Extract all unique variants per card from ALL sellers' product data
-  const variantsByCard = useMemo(() => {
+  // Extract unique packs per card from ALL sellers' product data
+  const packsByCard = useMemo(() => {
     if (!result) return {};
-    const map: Record<string, VariantKey[]> = {};
+    const map: Record<string, { pack_id: string; pack_name: string }[]> = {};
     for (const seller of result.sellers) {
       for (const [cardName, detail] of Object.entries(seller.cards)) {
         if (!map[cardName]) map[cardName] = [];
         for (const p of detail.products) {
-          const vid = variantId({ pack_id: p.pack_id, pack_card_id: p.pack_card_id, rare: p.variant_rare });
-          if (!map[cardName].some((v) => variantId(v) === vid)) {
+          if (!map[cardName].some((pk) => pk.pack_id === p.pack_id)) {
             map[cardName].push({
               pack_id: p.pack_id,
-              pack_card_id: p.pack_card_id,
-              rare: p.variant_rare,
-              label: `${p.variant_pack_name} (${p.variant_rare})`,
+              pack_name: p.variant_pack_name,
             });
           }
         }
@@ -105,32 +108,84 @@ export default function MultiSearchPage() {
     return map;
   }, [result]);
 
-  function toggleVariant(cardName: string, vid: string) {
-    setVariantFilters((prev) => {
-      const allVids = (variantsByCard[cardName] || []).map((v) => variantId(v));
-      const current = prev[cardName] ?? new Set(allVids);
+  // Extract unique rarities per card from ALL sellers' product data
+  const raresByCard = useMemo(() => {
+    if (!result) return {};
+    const map: Record<string, string[]> = {};
+    for (const seller of result.sellers) {
+      for (const [cardName, detail] of Object.entries(seller.cards)) {
+        if (!map[cardName]) map[cardName] = [];
+        for (const p of detail.products) {
+          if (!map[cardName].includes(p.variant_rare)) {
+            map[cardName].push(p.variant_rare);
+          }
+        }
+      }
+    }
+    return map;
+  }, [result]);
+
+  function togglePack(cardName: string, packId: string) {
+    setPackFilters((prev) => {
+      const allPacks = (packsByCard[cardName] || []).map((p) => p.pack_id);
+      const current = prev[cardName] ?? new Set(allPacks);
       const next = new Set(current);
-      if (next.has(vid)) {
-        next.delete(vid);
-        // Don't allow empty — if removing last one, keep it
+      if (next.has(packId)) {
+        next.delete(packId);
         if (next.size === 0) return prev;
       } else {
-        next.add(vid);
+        next.add(packId);
       }
       return { ...prev, [cardName]: next };
     });
   }
 
-  function isVariantSelected(cardName: string, vid: string): boolean {
-    if (!variantFilters[cardName]) return true; // no filter = all selected
-    return variantFilters[cardName].has(vid);
+  function toggleRare(cardName: string, rare: string) {
+    setRareFilters((prev) => {
+      const allRares = raresByCard[cardName] || [];
+      const current = prev[cardName] ?? new Set(allRares);
+      const next = new Set(current);
+      if (next.has(rare)) {
+        next.delete(rare);
+        if (next.size === 0) return prev;
+      } else {
+        next.add(rare);
+      }
+      return { ...prev, [cardName]: next };
+    });
+  }
+
+  function isPackSelected(cardName: string, packId: string): boolean {
+    if (!packFilters[cardName]) return true;
+    return packFilters[cardName].has(packId);
+  }
+
+  function isRareSelected(cardName: string, rare: string): boolean {
+    if (!rareFilters[cardName]) return true;
+    return rareFilters[cardName].has(rare);
   }
 
   function hasActiveFilter(): boolean {
-    return Object.keys(variantFilters).length > 0;
+    return (
+      Object.keys(packFilters).length > 0 ||
+      Object.keys(rareFilters).length > 0
+    );
   }
 
-  // Filter sellers based on variant selection, recalculate costs
+  function resetCardFilters(cardName: string) {
+    setPackFilters((prev) => {
+      const next = { ...prev };
+      delete next[cardName];
+      return next;
+    });
+    setRareFilters((prev) => {
+      const next = { ...prev };
+      delete next[cardName];
+      return next;
+    });
+  }
+
+  // Filter sellers based on pack + rarity selection (intersection), recalculate costs
   const filteredSellers = useMemo(() => {
     if (!result) return [];
     if (!hasActiveFilter()) return result.sellers;
@@ -145,13 +200,14 @@ export default function MultiSearchPage() {
       let totalCost = 0;
 
       for (const [cardName, detail] of Object.entries(seller.cards)) {
-        const selectedVids = variantFilters[cardName];
-        // Filter products to only selected variants
-        const prods = selectedVids
-          ? detail.products.filter((p) =>
-              selectedVids.has(variantId({ pack_id: p.pack_id, pack_card_id: p.pack_card_id, rare: p.variant_rare }))
-            )
-          : detail.products;
+        const packSet = packFilters[cardName];
+        const rareSet = rareFilters[cardName];
+        // Filter products: must match both pack AND rarity
+        const prods = detail.products.filter((p) => {
+          if (packSet && !packSet.has(p.pack_id)) return false;
+          if (rareSet && !rareSet.has(p.variant_rare)) return false;
+          return true;
+        });
 
         const stock = prods.reduce((s, p) => s + p.stock, 0);
         const qtyNeeded = quantityMap[cardName] ?? 1;
@@ -172,7 +228,9 @@ export default function MultiSearchPage() {
         }
 
         totalCost += cost;
-        const foundNames = [...new Set(sorted.map((p) => p.card_name).filter(Boolean))].sort();
+        const foundNames = [
+          ...new Set(sorted.map((p) => p.card_name).filter(Boolean)),
+        ].sort();
         newCards[cardName] = {
           total_stock: stock,
           lowest_price: sorted[0]?.price ?? 0,
@@ -187,7 +245,7 @@ export default function MultiSearchPage() {
       }
     }
     return filtered;
-  }, [result, variantFilters, tags]);
+  }, [result, packFilters, rareFilters, tags]);
 
   function sortedSellers(sellers: SellerMatch[]): SellerMatch[] {
     return [...sellers].sort((a, b) => {
@@ -202,6 +260,19 @@ export default function MultiSearchPage() {
     : false;
 
   const displaySellers = sortedSellers(filteredSellers);
+
+  // Determine which cards have filter options (multiple packs or multiple rarities)
+  const filterableCards = useMemo(() => {
+    const cards: string[] = [];
+    for (const cardName of Object.keys(packsByCard)) {
+      const packs = packsByCard[cardName] || [];
+      const rares = raresByCard[cardName] || [];
+      if (packs.length > 1 || rares.length > 1) {
+        cards.push(cardName);
+      }
+    }
+    return cards;
+  }, [packsByCard, raresByCard]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -247,8 +318,18 @@ export default function MultiSearchPage() {
                   onClick={() => removeTag(i)}
                   className="ml-1 text-gray-600 hover:text-red-400 transition-colors"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </span>
@@ -266,7 +347,11 @@ export default function MultiSearchPage() {
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
             </svg>
             <input
               type="text"
@@ -300,23 +385,47 @@ export default function MultiSearchPage() {
             className="btn-gold whitespace-nowrap"
           >
             {loading ? (
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="animate-spin w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
             ) : (
               "搜尋共同賣家"
             )}
           </button>
         </div>
-
       </div>
 
       {/* Error */}
       {error && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          <svg
+            className="w-4 h-4 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+            />
           </svg>
           {error}
         </div>
@@ -325,9 +434,24 @@ export default function MultiSearchPage() {
       {/* Loading */}
       {loading && (
         <div className="card-frame p-8 text-center animate-fade-in">
-          <svg className="animate-spin w-8 h-8 text-gold-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          <svg
+            className="animate-spin w-8 h-8 text-gold-500 mx-auto mb-4"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
           </svg>
           <p className="text-gray-400">正在搜尋共同賣家…</p>
           <p className="text-xs text-gray-600 mt-1">
@@ -394,8 +518,18 @@ export default function MultiSearchPage() {
           {/* Card details / errors */}
           {hasErrors && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
-              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+              <svg
+                className="w-4 h-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"
+                />
               </svg>
               <span>
                 部分卡牌搜尋失敗：
@@ -407,48 +541,81 @@ export default function MultiSearchPage() {
             </div>
           )}
 
-          {/* Variant filter per card */}
-          {Object.entries(variantsByCard).map(([cardName, variants]) => (
-            variants.length > 1 && (
+          {/* Pack + Rarity filters per card */}
+          {filterableCards.map((cardName) => {
+            const packs = packsByCard[cardName] || [];
+            const rares = raresByCard[cardName] || [];
+            const hasCardFilter =
+              !!packFilters[cardName] || !!rareFilters[cardName];
+            return (
               <div key={cardName} className="card-frame px-4 py-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-300 font-medium">{cardName}</span>
-                  <span className="text-xs text-gray-600">{variants.length} 版本</span>
-                  {variantFilters[cardName] && (
+                  <span className="text-sm text-gray-300 font-medium">
+                    {cardName}
+                  </span>
+                  <span className="text-xs text-gray-600">
+                    {packs.length} 擴充包 · {rares.length} 稀有度
+                  </span>
+                  {hasCardFilter && (
                     <button
-                      onClick={() => setVariantFilters((prev) => {
-                        const next = { ...prev };
-                        delete next[cardName];
-                        return next;
-                      })}
+                      onClick={() => resetCardFilters(cardName)}
                       className="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-auto"
                     >
                       重設
                     </button>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {variants.map((v) => {
-                    const vid = variantId(v);
-                    const selected = isVariantSelected(cardName, vid);
-                    return (
-                      <button
-                        key={vid}
-                        onClick={() => toggleVariant(cardName, vid)}
-                        className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                          selected
-                            ? "bg-gold-500/15 text-gold-400 border border-gold-500/30"
-                            : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
-                        }`}
-                      >
-                        {v.label}
-                      </button>
-                    );
-                  })}
-                </div>
+                {/* Pack filter row */}
+                {packs.length > 1 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] text-gray-600 w-12 shrink-0">
+                      擴充包
+                    </span>
+                    {packs.map((pk) => {
+                      const selected = isPackSelected(cardName, pk.pack_id);
+                      return (
+                        <button
+                          key={pk.pack_id}
+                          onClick={() => togglePack(cardName, pk.pack_id)}
+                          className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                            selected
+                              ? "bg-gold-500/15 text-gold-400 border border-gold-500/30"
+                              : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                          }`}
+                        >
+                          {pk.pack_name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {/* Rarity filter row */}
+                {rares.length > 1 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] text-gray-600 w-12 shrink-0">
+                      稀有度
+                    </span>
+                    {rares.map((r) => {
+                      const selected = isRareSelected(cardName, r);
+                      return (
+                        <button
+                          key={r}
+                          onClick={() => toggleRare(cardName, r)}
+                          className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                            selected
+                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                          }`}
+                        >
+                          {r}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )
-          ))}
+            );
+          })}
 
           {/* Seller cards */}
           {displaySellers.map((seller, i) => (
@@ -484,14 +651,20 @@ export default function MultiSearchPage() {
                   </span>
                   <svg
                     className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                      expandedSellers.has(seller.seller_nickname) ? "rotate-180" : ""
+                      expandedSellers.has(seller.seller_nickname)
+                        ? "rotate-180"
+                        : ""
                     }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                     strokeWidth={2}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
                   </svg>
                 </div>
               </div>
@@ -512,7 +685,10 @@ export default function MultiSearchPage() {
                             alt={cardName}
                             className="w-32 object-contain rounded border border-vault-600/50"
                             loading="lazy"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display =
+                                "none";
+                            }}
                           />
                         ) : null;
                       })()}
@@ -590,13 +766,23 @@ export default function MultiSearchPage() {
           {displaySellers.length === 0 && (
             <div className="card-frame p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+                <svg
+                  className="w-8 h-8 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
+                  />
                 </svg>
               </div>
               <p className="text-gray-500">
                 {hasActiveFilter()
-                  ? "篩選後沒有符合的賣家，試試放寬版本篩選"
+                  ? "篩選後沒有符合的賣家，試試放寬擴充包或稀有度篩選"
                   : "沒有找到同時擁有所有指定卡牌的賣家"}
               </p>
               <p className="text-xs text-gray-600 mt-1">
@@ -611,8 +797,18 @@ export default function MultiSearchPage() {
       {!searched && !loading && tags.length === 0 && (
         <div className="card-frame p-12 text-center animate-fade-in">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+            <svg
+              className="w-8 h-8 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+              />
             </svg>
           </div>
           <p className="text-gray-500">在上方輸入多張卡牌名稱開始搜尋</p>

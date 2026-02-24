@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { CardVariant } from "../types";
 import { searchCards, addToWatchlist } from "../api/client";
 import PriceAlertModal from "../components/PriceAlertModal";
@@ -18,6 +18,8 @@ export default function SearchPage() {
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [searched, setSearched] = useState(false);
+  // Rarity filter: null = all selected, Set = only selected rarities shown
+  const [rareFilter, setRareFilter] = useState<Set<string> | null>(null);
 
   const cardKey = (c: CardVariant) => `${c.card_key}|${c.rare}|${c.pack_id}`;
 
@@ -27,6 +29,7 @@ export default function SearchPage() {
     setError("");
     setSelected(new Set());
     setSearched(true);
+    setRareFilter(null);
     try {
       const res = await searchCards(query.trim());
       setResults(res.data);
@@ -47,17 +50,55 @@ export default function SearchPage() {
     });
   }
 
+  // Extract unique rarities from results
+  const uniqueRares = useMemo(() => {
+    const rares: string[] = [];
+    for (const card of results) {
+      if (!rares.includes(card.rare)) {
+        rares.push(card.rare);
+      }
+    }
+    return rares;
+  }, [results]);
+
+  // Filtered results based on rarity selection
+  const filteredResults = useMemo(() => {
+    if (!rareFilter) return results;
+    return results.filter((c) => rareFilter.has(c.rare));
+  }, [results, rareFilter]);
+
+  function toggleRare(rare: string) {
+    setRareFilter((prev) => {
+      const current = prev ?? new Set(uniqueRares);
+      const next = new Set(current);
+      if (next.has(rare)) {
+        next.delete(rare);
+        if (next.size === 0) return prev;
+      } else {
+        next.add(rare);
+      }
+      return next;
+    });
+  }
+
+  function isRareSelected(rare: string): boolean {
+    if (!rareFilter) return true;
+    return rareFilter.has(rare);
+  }
+
   function toggleAll() {
-    if (selected.size === results.length) {
+    if (selected.size === filteredResults.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(results.map(cardKey)));
+      setSelected(new Set(filteredResults.map(cardKey)));
     }
   }
 
   const selectedCards = results.filter((c) => selected.has(cardKey(c)));
 
-  async function handleAddToWatchlist(items: Array<CardVariant & { target_price: number }>) {
+  async function handleAddToWatchlist(
+    items: Array<CardVariant & { target_price: number }>,
+  ) {
     setSubmitting(true);
     try {
       const payload = items.map((item) => ({
@@ -104,7 +145,11 @@ export default function SearchPage() {
               stroke="currentColor"
               strokeWidth={2}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
             </svg>
             <input
               type="text"
@@ -115,11 +160,30 @@ export default function SearchPage() {
               className="input-dark !pl-10"
             />
           </div>
-          <button onClick={handleSearch} disabled={searching || !query.trim()} className="btn-gold whitespace-nowrap">
+          <button
+            onClick={handleSearch}
+            disabled={searching || !query.trim()}
+            className="btn-gold whitespace-nowrap"
+          >
             {searching ? (
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg
+                className="animate-spin w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
             ) : (
               "搜尋"
@@ -131,8 +195,18 @@ export default function SearchPage() {
       {/* Error */}
       {error && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          <svg
+            className="w-4 h-4 shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+            />
           </svg>
           {error}
         </div>
@@ -142,22 +216,79 @@ export default function SearchPage() {
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 animate-slide-up">
           <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm shadow-xl">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
             </svg>
             {toast}
           </div>
         </div>
       )}
 
+      {/* Rarity filter */}
+      {results.length > 0 && uniqueRares.length > 1 && (
+        <div className="card-frame px-4 py-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300 font-medium">稀有度篩選</span>
+            <span className="text-xs text-gray-600">
+              {uniqueRares.length} 種
+            </span>
+            {rareFilter && (
+              <button
+                onClick={() => setRareFilter(null)}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-auto"
+              >
+                重設
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {uniqueRares.map((r) => {
+              const sel = isRareSelected(r);
+              return (
+                <button
+                  key={r}
+                  onClick={() => toggleRare(r)}
+                  className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                    sel
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                  }`}
+                >
+                  {r}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Results */}
-      {results.length > 0 && (
+      {filteredResults.length > 0 && (
         <div className="card-frame animate-fade-in">
           {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-vault-700/50">
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-400">
-                找到 <span className="text-gold-400 font-mono">{results.length}</span> 個結果
+                找到{" "}
+                <span className="text-gold-400 font-mono">
+                  {filteredResults.length}
+                </span>{" "}
+                個結果
+                {rareFilter && (
+                  <span className="text-gray-600 ml-1">
+                    (共 {results.length})
+                  </span>
+                )}
               </span>
               {selected.size > 0 && (
                 <span className="badge bg-gold-500/15 text-gold-400 border border-gold-500/20">
@@ -166,7 +297,10 @@ export default function SearchPage() {
               )}
             </div>
             {selected.size > 0 && (
-              <button onClick={() => setModalOpen(true)} className="btn-gold text-xs">
+              <button
+                onClick={() => setModalOpen(true)}
+                className="btn-gold text-xs"
+              >
                 加入監控
               </button>
             )}
@@ -180,7 +314,10 @@ export default function SearchPage() {
                   <th className="table-header w-10">
                     <input
                       type="checkbox"
-                      checked={selected.size === results.length && results.length > 0}
+                      checked={
+                        selected.size === filteredResults.length &&
+                        filteredResults.length > 0
+                      }
                       onChange={toggleAll}
                       className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
                     />
@@ -195,7 +332,7 @@ export default function SearchPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-vault-700/20">
-                {results.map((card, i) => {
+                {filteredResults.map((card, i) => {
                   const key = cardKey(card);
                   const isSelected = selected.has(key);
                   return (
@@ -203,9 +340,7 @@ export default function SearchPage() {
                       key={key}
                       onClick={() => toggleSelect(key)}
                       className={`cursor-pointer transition-colors duration-150 ${
-                        isSelected
-                          ? "bg-gold-500/5"
-                          : "hover:bg-vault-800/50"
+                        isSelected ? "bg-gold-500/5" : "hover:bg-vault-800/50"
                       }`}
                       style={{ animationDelay: `${i * 30}ms` }}
                     >
@@ -224,7 +359,10 @@ export default function SearchPage() {
                           alt={card.card_name}
                           className="w-32 object-contain rounded border border-vault-600/50"
                           loading="lazy"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display =
+                              "none";
+                          }}
                         />
                       </td>
                       <td className="table-cell font-medium text-gray-200">
@@ -232,7 +370,9 @@ export default function SearchPage() {
                       </td>
                       <td className="table-cell text-gray-400">
                         <span className="text-gray-300">{card.pack_name}</span>
-                        <span className="text-gray-600 ml-1">({card.pack_id})</span>
+                        <span className="text-gray-600 ml-1">
+                          ({card.pack_id})
+                        </span>
                       </td>
                       <td className="table-cell font-mono text-gray-400 text-xs">
                         {card.pack_card_id}
@@ -242,7 +382,9 @@ export default function SearchPage() {
                       </td>
                       <td className="table-cell text-right font-mono">
                         {card.lowest_price != null ? (
-                          <span className="text-gold-400">${card.lowest_price}</span>
+                          <span className="text-gold-400">
+                            ${card.lowest_price}
+                          </span>
                         ) : (
                           <span className="text-gray-600">—</span>
                         )}
@@ -260,15 +402,31 @@ export default function SearchPage() {
       )}
 
       {/* Empty state */}
-      {searched && !searching && results.length === 0 && !error && (
+      {searched && !searching && filteredResults.length === 0 && !error && (
         <div className="card-frame p-12 text-center animate-fade-in">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            <svg
+              className="w-8 h-8 text-gray-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
             </svg>
           </div>
-          <p className="text-gray-500">找不到相關卡牌</p>
-          <p className="text-xs text-gray-600 mt-1">請嘗試其他關鍵字</p>
+          <p className="text-gray-500">
+            {rareFilter
+              ? "篩選後沒有結果，試試放寬稀有度篩選"
+              : "找不到相關卡牌"}
+          </p>
+          <p className="text-xs text-gray-600 mt-1">
+            {rareFilter ? "點擊「重設」顯示所有結果" : "請嘗試其他關鍵字"}
+          </p>
         </div>
       )}
 
