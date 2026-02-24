@@ -64,7 +64,7 @@ frontend/
 │   │                      # WatchlistPage, HistoryPage, LineBindingPage
 │   └── components/        # Layout (sidebar), PriceAlertModal, ProtectedRoute
 ├── nginx.conf             # Reverse proxy config
-├── tailwind.config.js     # "Collector's Vault" dark theme + gold accents
+├── tailwind.config.js     # Light theme with amber accents
 └── Dockerfile             # Multi-stage: node build → nginx serve
 
 legacy/                    # Original CLI tools (preserved for reference)
@@ -139,3 +139,17 @@ task deploy      # deploy to EC2 via SSH (git pull + docker compose up --build)
 - Frontend uses nginx as both static server and reverse proxy to avoid CORS
 - Cloudflare proxy mode only supports specific ports (80, 443, 8080, etc.) — not 3000
 - LINE webhook URL: `https://kapaipai.nt1.dev/api/line/webhook` (must be set in LINE Developers Console)
+- Light theme with amber accents (not dark theme) — matches typical auction/price-check sites
+- All page components stay mounted (display:none when inactive) to preserve state across navigation
+
+## Filter UX Design
+
+Both SearchPage and MultiSearchPage share the same **additive filter** pattern:
+
+- **Filter types:** Pack (擴充包) and Rarity (稀有度), applied as intersection (AND)
+- **Additive UX:** First click shows ONLY the clicked item (subtractive entry). Subsequent clicks ADD more items. This feels like "pick what you want" rather than "remove what you don't want"
+- **Reset:** Clearing all selections (or clicking the "重設" button) returns to showing all
+- **State:** `null` = all shown (no filter active), `Set<string>` = only items in the set are shown
+- **Visual:** Selected items have colored backgrounds (amber for packs, emerald for rarity). Unselected items are grayed out with line-through
+- **SearchPage:** Single filter card with pack row + rarity row, shared reset button
+- **MultiSearchPage:** Per-card filter cards (each card can have independent pack + rarity filters). Seller results are recalculated (stock, cost) based on filtered products
