@@ -42,8 +42,10 @@ export default function MultiSearchPage() {
     if (!name) return;
     if (tags.some((t) => t.name.toLowerCase() === name.toLowerCase())) return;
     if (tags.length >= 10) return;
-    setTags([...tags, { name, quantity: 1 }]);
+    const newTags = [...tags, { name, quantity: 1 }];
+    setTags(newTags);
     setInputValue("");
+    doSearch(newTags);
   }
 
   function removeTag(index: number) {
@@ -60,8 +62,8 @@ export default function MultiSearchPage() {
     );
   }
 
-  async function handleSearch() {
-    if (tags.length < 1) return;
+  async function doSearch(searchTags: MultiSearchCardRequest[]) {
+    if (searchTags.length < 1) return;
     setLoading(true);
     setError("");
     setSearched(true);
@@ -69,7 +71,7 @@ export default function MultiSearchPage() {
     setPackFilters({});
     setRareFilters({});
     try {
-      const res = await multiCardSearch(tags);
+      const res = await multiCardSearch(searchTags);
       setResult(res.data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "搜尋失敗");
@@ -378,13 +380,13 @@ export default function MultiSearchPage() {
           </div>
           <button
             onClick={addTag}
-            disabled={!inputValue.trim() || tags.length >= 10}
+            disabled={!inputValue.trim() || tags.length >= 10 || loading}
             className="btn-ghost whitespace-nowrap"
           >
             新增
           </button>
           <button
-            onClick={handleSearch}
+            onClick={() => doSearch(tags)}
             disabled={loading || tags.length < 1}
             className="btn-gold whitespace-nowrap"
           >
