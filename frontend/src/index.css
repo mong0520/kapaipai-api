@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-vault-950 text-gray-200 font-body antialiased;
+    @apply bg-vault-950 text-gray-800 font-body antialiased;
   }
 
   ::-webkit-scrollbar {
@@ -14,27 +14,24 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-vault-900;
+    @apply bg-gray-100;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-vault-600 rounded-full;
+    @apply bg-gray-300 rounded-full;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-vault-500;
+    @apply bg-gray-400;
   }
 }
 
 @layer components {
   .card-frame {
-    @apply relative bg-vault-850 border border-vault-600/50 rounded-lg overflow-hidden;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, rgba(247, 197, 21, 0.03) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, rgba(199, 133, 5, 0.02) 0%, transparent 50%);
+    @apply relative bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm;
   }
 
   .card-frame::before {
     content: "";
-    @apply absolute inset-0 pointer-events-none opacity-[0.03];
+    @apply absolute inset-0 pointer-events-none opacity-[0.02];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -44,34 +41,34 @@
   .gold-border-top::after {
     content: "";
     @apply absolute top-0 left-0 right-0 h-[1px];
-    background: linear-gradient(90deg, transparent, rgba(247, 197, 21, 0.5), transparent);
+    background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.5), transparent);
   }
 
   .btn-gold {
-    @apply px-4 py-2 bg-gold-500/10 text-gold-400 border border-gold-500/30 rounded-md
+    @apply px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-md
            font-display font-semibold tracking-wide uppercase text-sm
-           hover:bg-gold-500/20 hover:border-gold-400/50 hover:text-gold-300
-           active:bg-gold-500/30
+           hover:bg-amber-100 hover:border-amber-300 hover:text-amber-800
+           active:bg-amber-200
            transition-all duration-200 cursor-pointer
-           disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gold-500/10;
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-50;
   }
 
   .btn-ghost {
-    @apply px-3 py-1.5 text-gray-400 rounded-md text-sm font-medium
-           hover:bg-vault-700 hover:text-gray-200
+    @apply px-3 py-1.5 text-gray-500 rounded-md text-sm font-medium
+           hover:bg-gray-100 hover:text-gray-800
            transition-all duration-200 cursor-pointer;
   }
 
   .btn-danger {
-    @apply px-3 py-1.5 text-red-400/80 rounded-md text-sm font-medium
-           hover:bg-red-500/10 hover:text-red-300
+    @apply px-3 py-1.5 text-red-500 rounded-md text-sm font-medium
+           hover:bg-red-50 hover:text-red-600
            transition-all duration-200 cursor-pointer;
   }
 
   .input-dark {
-    @apply w-full px-4 py-2.5 bg-vault-900 border border-vault-600/50 rounded-md
-           text-gray-200 placeholder-gray-500 font-body
-           focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/20
+    @apply w-full px-4 py-2.5 bg-white border border-gray-200 rounded-md
+           text-gray-800 placeholder-gray-400 font-body
+           focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-200
            transition-all duration-200;
   }
 
@@ -88,14 +85,14 @@
   }
 
   .badge-rare {
-    @apply bg-gold-500/15 text-gold-400 border border-gold-500/20;
+    @apply bg-amber-50 text-amber-700 border border-amber-200;
   }
 
   .price-hit {
-    @apply text-emerald-400;
+    @apply text-emerald-600;
   }
 
   .price-miss {
-    @apply text-gray-400;
+    @apply text-gray-500;
   }
 }

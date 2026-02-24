@@ -284,10 +284,10 @@ export default function MultiSearchPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Page header */}
       <div>
-        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
+        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-900">
           多卡一起買
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-400 mt-1">
           搜尋同時擁有多張指定卡牌的賣家，一次買齊省運費
         </p>
       </div>
@@ -300,29 +300,29 @@ export default function MultiSearchPage() {
             {tags.map((tag, i) => (
               <span
                 key={tag.name}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-vault-800 border border-vault-600/50 text-sm animate-slide-up"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-sm animate-slide-up"
               >
-                <span className="text-gray-200 font-medium">{tag.name}</span>
+                <span className="text-gray-800 font-medium">{tag.name}</span>
                 <span className="flex items-center gap-0.5 ml-1">
                   <button
                     onClick={() => updateQuantity(i, -1)}
-                    className="w-5 h-5 rounded bg-vault-700 text-gray-400 hover:text-gray-200 hover:bg-vault-600 flex items-center justify-center text-xs transition-colors"
+                    className="w-5 h-5 rounded bg-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-300 flex items-center justify-center text-xs transition-colors"
                   >
                     -
                   </button>
-                  <span className="w-6 text-center font-mono text-gold-400 text-xs">
+                  <span className="w-6 text-center font-mono text-amber-600 text-xs">
                     {tag.quantity}
                   </span>
                   <button
                     onClick={() => updateQuantity(i, 1)}
-                    className="w-5 h-5 rounded bg-vault-700 text-gray-400 hover:text-gray-200 hover:bg-vault-600 flex items-center justify-center text-xs transition-colors"
+                    className="w-5 h-5 rounded bg-gray-200 text-gray-500 hover:text-gray-800 hover:bg-gray-300 flex items-center justify-center text-xs transition-colors"
                   >
                     +
                   </button>
                 </span>
                 <button
                   onClick={() => removeTag(i)}
-                  className="ml-1 text-gray-600 hover:text-red-400 transition-colors"
+                  className="ml-1 text-gray-400 hover:text-red-500 transition-colors"
                 >
                   <svg
                     className="w-3.5 h-3.5"
@@ -347,7 +347,7 @@ export default function MultiSearchPage() {
         <div className="flex gap-3">
           <div className="relative flex-1">
             <svg
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -419,7 +419,7 @@ export default function MultiSearchPage() {
 
       {/* Error */}
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
           <svg
             className="w-4 h-4 shrink-0"
             fill="none"
@@ -441,7 +441,7 @@ export default function MultiSearchPage() {
       {loading && (
         <div className="card-frame p-8 text-center animate-fade-in">
           <svg
-            className="animate-spin w-8 h-8 text-gold-500 mx-auto mb-4"
+            className="animate-spin w-8 h-8 text-amber-500 mx-auto mb-4"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -459,8 +459,8 @@ export default function MultiSearchPage() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
             />
           </svg>
-          <p className="text-gray-400">正在搜尋共同賣家…</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-gray-500">正在搜尋共同賣家…</p>
+          <p className="text-xs text-gray-400 mt-1">
             搜尋 {tags.length} 張卡牌的所有版本，可能需要 10-30 秒
           </p>
         </div>
@@ -473,21 +473,21 @@ export default function MultiSearchPage() {
           <div className="card-frame px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-sm">
-                <span className="text-gray-400">
+                <span className="text-gray-500">
                   掃描{" "}
-                  <span className="font-mono text-gray-300">
+                  <span className="font-mono text-gray-700">
                     {result.stats.total_sellers_scanned}
                   </span>{" "}
                   位賣家
                 </span>
-                <span className="text-gray-400">
+                <span className="text-gray-500">
                   找到{" "}
-                  <span className="font-mono text-gold-400">
+                  <span className="font-mono text-amber-600">
                     {displaySellers.length}
                   </span>{" "}
                   位符合
                   {hasActiveFilter() && (
-                    <span className="text-gray-600 ml-1">
+                    <span className="text-gray-400 ml-1">
                       (原 {result.stats.matching_sellers})
                     </span>
                   )}
@@ -496,7 +496,7 @@ export default function MultiSearchPage() {
               {/* Sort controls */}
               {displaySellers.length > 0 && (
                 <div className="flex items-center gap-1.5 text-xs">
-                  <span className="text-gray-600">排序：</span>
+                  <span className="text-gray-400">排序：</span>
                   {(
                     [
                       ["total_cost", "總價"],
@@ -509,8 +509,8 @@ export default function MultiSearchPage() {
                       onClick={() => setSortBy(key)}
                       className={`px-2 py-1 rounded transition-colors ${
                         sortBy === key
-                          ? "bg-gold-500/15 text-gold-400 border border-gold-500/20"
-                          : "text-gray-500 hover:text-gray-300 border border-transparent"
+                          ? "bg-amber-50 text-amber-700 border border-amber-200"
+                          : "text-gray-500 hover:text-gray-700 border border-transparent"
                       }`}
                     >
                       {label}
@@ -523,7 +523,7 @@ export default function MultiSearchPage() {
 
           {/* Card details / errors */}
           {hasErrors && (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-700 text-sm">
               <svg
                 className="w-4 h-4 shrink-0"
                 fill="none"
@@ -556,16 +556,16 @@ export default function MultiSearchPage() {
             return (
               <div key={cardName} className="card-frame px-4 py-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-300 font-medium">
+                  <span className="text-sm text-gray-700 font-medium">
                     {cardName}
                   </span>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-400">
                     {packs.length} 擴充包 · {rares.length} 稀有度
                   </span>
                   {hasCardFilter && (
                     <button
                       onClick={() => resetCardFilters(cardName)}
-                      className="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-auto"
+                      className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
                     >
                       重設
                     </button>
@@ -574,7 +574,7 @@ export default function MultiSearchPage() {
                 {/* Pack filter row */}
                 {packs.length > 1 && (
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-[10px] text-gray-600 w-12 shrink-0">
+                    <span className="text-[10px] text-gray-400 w-12 shrink-0">
                       擴充包
                     </span>
                     {packs.map((pk) => {
@@ -585,8 +585,8 @@ export default function MultiSearchPage() {
                           onClick={() => togglePack(cardName, pk.pack_id)}
                           className={`px-2.5 py-1 rounded text-xs transition-colors ${
                             selected
-                              ? "bg-gold-500/15 text-gold-400 border border-gold-500/30"
-                              : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                              ? "bg-amber-50 text-amber-700 border border-amber-200"
+                              : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
                           }`}
                         >
                           {pk.pack_name}
@@ -598,7 +598,7 @@ export default function MultiSearchPage() {
                 {/* Rarity filter row */}
                 {rares.length > 1 && (
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-[10px] text-gray-600 w-12 shrink-0">
+                    <span className="text-[10px] text-gray-400 w-12 shrink-0">
                       稀有度
                     </span>
                     {rares.map((r) => {
@@ -609,8 +609,8 @@ export default function MultiSearchPage() {
                           onClick={() => toggleRare(cardName, r)}
                           className={`px-2.5 py-1 rounded text-xs transition-colors ${
                             selected
-                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                              : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                              ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                              : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
                           }`}
                         >
                           {r}
@@ -632,31 +632,31 @@ export default function MultiSearchPage() {
             >
               {/* Seller header */}
               <div
-                className="flex items-center justify-between px-4 py-3 border-b border-vault-700/50 cursor-pointer hover:bg-vault-800/30 transition-colors"
+                className="flex items-center justify-between px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => toggleExpanded(seller.seller_nickname)}
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-gray-200 font-medium truncate">
+                  <span className="text-gray-800 font-medium truncate">
                     {seller.seller_nickname}
                   </span>
                   {seller.seller_area && (
-                    <span className="text-xs text-gray-500 shrink-0">
+                    <span className="text-xs text-gray-400 shrink-0">
                       {seller.seller_area}
                     </span>
                   )}
-                  <span className="badge bg-vault-700 text-gray-400 shrink-0">
+                  <span className="badge bg-gray-100 text-gray-500 shrink-0">
                     信用 {seller.credit}
                   </span>
-                  <span className="badge bg-vault-700 text-gray-400 shrink-0">
+                  <span className="badge bg-gray-100 text-gray-500 shrink-0">
                     成交 {seller.order_complete}
                   </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
-                  <span className="font-mono text-lg text-gold-400 font-bold">
+                  <span className="font-mono text-lg text-amber-600 font-bold">
                     ${seller.total_cost}
                   </span>
                   <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
                       expandedSellers.has(seller.seller_nickname)
                         ? "rotate-180"
                         : ""
@@ -679,7 +679,7 @@ export default function MultiSearchPage() {
               {Object.entries(seller.cards).map(([cardName, detail]) => (
                 <div
                   key={cardName}
-                  className="px-4 py-2.5 border-b border-vault-700/20 last:border-b-0"
+                  className="px-4 py-2.5 border-b border-gray-100 last:border-b-0"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -689,7 +689,7 @@ export default function MultiSearchPage() {
                           <img
                             src={imgUrl}
                             alt={cardName}
-                            className="w-32 object-contain rounded border border-vault-600/50"
+                            className="w-32 object-contain rounded border border-gray-200"
                             loading="lazy"
                             onError={(e) => {
                               (e.target as HTMLImageElement).style.display =
@@ -698,31 +698,31 @@ export default function MultiSearchPage() {
                           />
                         ) : null;
                       })()}
-                      <span className="text-sm text-gray-300">
+                      <span className="text-sm text-gray-700">
                         {detail.found_card_names?.length
                           ? detail.found_card_names.join("、")
                           : cardName}
                       </span>
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-gray-400">
                         x{tags.find((t) => t.name === cardName)?.quantity ?? 1}
                       </span>
                     </div>
                     <div className="flex items-center gap-4 text-xs">
                       <span className="text-gray-500">
                         庫存{" "}
-                        <span className="font-mono text-gray-300">
+                        <span className="font-mono text-gray-700">
                           {detail.total_stock}
                         </span>
                       </span>
                       <span className="text-gray-500">
                         最低{" "}
-                        <span className="font-mono text-gold-400">
+                        <span className="font-mono text-amber-600">
                           ${detail.lowest_price}
                         </span>
                       </span>
                       <span className="text-gray-500">
                         小計{" "}
-                        <span className="font-mono text-emerald-400">
+                        <span className="font-mono text-emerald-600">
                           ${detail.estimated_cost}
                         </span>
                       </span>
@@ -735,27 +735,27 @@ export default function MultiSearchPage() {
                       {detail.products.map((product, j) => (
                         <div
                           key={j}
-                          className="flex items-center justify-between py-1.5 px-3 rounded bg-vault-800/50 text-xs"
+                          className="flex items-center justify-between py-1.5 px-3 rounded bg-gray-50 text-xs"
                         >
                           <div className="flex items-center gap-3">
                             <span className="badge badge-rare text-[10px]">
                               {product.variant_rare}
                             </span>
-                            <span className="text-gray-400">
+                            <span className="text-gray-500">
                               {product.variant_pack_name}
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-400">
                               {product.condition_label}
                             </span>
                           </div>
                           <div className="flex items-center gap-4">
                             <span className="text-gray-500">
                               庫存{" "}
-                              <span className="font-mono text-gray-300">
+                              <span className="font-mono text-gray-700">
                                 {product.stock}
                               </span>
                             </span>
-                            <span className="font-mono text-gold-400">
+                            <span className="font-mono text-amber-600">
                               ${product.price}
                             </span>
                           </div>
@@ -771,9 +771,9 @@ export default function MultiSearchPage() {
           {/* Empty result */}
           {displaySellers.length === 0 && (
             <div className="card-frame p-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                 <svg
-                  className="w-8 h-8 text-gray-600"
+                  className="w-8 h-8 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -791,7 +791,7 @@ export default function MultiSearchPage() {
                   ? "篩選後沒有符合的賣家，試試放寬擴充包或稀有度篩選"
                   : "沒有找到同時擁有所有指定卡牌的賣家"}
               </p>
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 試試減少卡牌數量或放寬數量需求
               </p>
             </div>
@@ -802,9 +802,9 @@ export default function MultiSearchPage() {
       {/* Initial empty state */}
       {!searched && !loading && tags.length === 0 && (
         <div className="card-frame p-12 text-center animate-fade-in">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-gray-600"
+              className="w-8 h-8 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -818,7 +818,7 @@ export default function MultiSearchPage() {
             </svg>
           </div>
           <p className="text-gray-500">在上方輸入多張卡牌名稱開始搜尋</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             系統會找出同時擁有所有卡牌的賣家，讓你一次買齊省運費
           </p>
         </div>

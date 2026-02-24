@@ -114,22 +114,22 @@ export default function Layout() {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/30 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-vault-900 border-r border-vault-700/50 flex flex-col transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center gap-3 px-5 border-b border-vault-700/50">
-          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg shadow-gold-500/20">
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-gray-200">
+          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
             <svg
-              className="w-4.5 h-4.5 text-vault-950"
+              className="w-4.5 h-4.5 text-white"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -137,10 +137,10 @@ export default function Layout() {
             </svg>
           </div>
           <div>
-            <h1 className="font-display font-bold text-lg tracking-wide text-gray-100 leading-none">
+            <h1 className="font-display font-bold text-lg tracking-wide text-gray-900 leading-none">
               卡拍拍
             </h1>
-            <span className="text-[10px] font-display tracking-[0.2em] text-gold-500/70">
+            <span className="text-[10px] font-display tracking-[0.2em] text-amber-600">
               非官方查價器
             </span>
           </div>
@@ -157,8 +157,8 @@ export default function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
                   isActive
-                    ? "bg-gold-500/10 text-gold-400 border border-gold-500/20"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-vault-800 border border-transparent"
+                    ? "bg-amber-50 text-amber-700 border border-amber-200"
+                    : "text-gray-500 hover:text-gray-800 hover:bg-gray-50 border border-transparent"
                 }`
               }
             >
@@ -171,7 +171,7 @@ export default function Layout() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-vault-700/50 space-y-3">
+        <div className="p-4 border-t border-gray-200 space-y-3">
           {/* User info */}
           {user && (
             <div className="flex items-center gap-3">
@@ -183,21 +183,21 @@ export default function Layout() {
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <div className="w-8 h-8 rounded-full bg-vault-700 flex items-center justify-center text-gold-400 text-sm font-bold">
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-amber-600 text-sm font-bold">
                   {user.nickname?.[0] || "?"}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-gray-200 truncate">
+                <div className="text-sm text-gray-800 truncate">
                   {user.nickname}
                 </div>
-                <div className="text-xs text-gray-500 truncate">
+                <div className="text-xs text-gray-400 truncate">
                   {user.email}
                 </div>
               </div>
               <button
                 onClick={logout}
-                className="p-1.5 rounded-md hover:bg-vault-800 text-gray-500 hover:text-gray-300 transition-colors"
+                className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
                 title="Logout"
               >
                 <svg
@@ -217,7 +217,7 @@ export default function Layout() {
             </div>
           )}
           {/* Scheduler status */}
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div className="flex items-center gap-2 text-xs text-gray-400">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-mono">排程監控運行中</span>
           </div>
@@ -227,10 +227,10 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <header className="lg:hidden h-14 flex items-center gap-3 px-4 bg-vault-900/80 backdrop-blur-sm border-b border-vault-700/50 sticky top-0 z-20">
+        <header className="lg:hidden h-14 flex items-center gap-3 px-4 bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-20">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-1.5 rounded-md hover:bg-vault-800 text-gray-400 transition-colors"
+            className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -246,7 +246,7 @@ export default function Layout() {
               />
             </svg>
           </button>
-          <span className="font-display font-bold tracking-wide text-gray-100">
+          <span className="font-display font-bold tracking-wide text-gray-900">
             卡拍拍非官方查價器
           </span>
         </header>

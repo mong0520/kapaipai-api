@@ -41,19 +41,19 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative card-frame w-full max-w-lg max-h-[80vh] flex flex-col animate-slide-up">
+      <div className="relative card-frame w-full max-w-lg max-h-[80vh] flex flex-col animate-slide-up shadow-xl">
         <div className="gold-border-top" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-vault-700/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div>
-            <h2 className="font-display font-bold text-lg tracking-wide text-gray-100">
+            <h2 className="font-display font-bold text-lg tracking-wide text-gray-900">
               設定到價通知
             </h2>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-gray-400 mt-0.5">
               已選擇 {cards.length} 張卡牌
             </p>
           </div>
@@ -71,21 +71,21 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
             return (
               <div
                 key={key}
-                className="flex items-center gap-4 p-3 rounded-lg bg-vault-900/60 border border-vault-700/30"
+                className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 border border-gray-200"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-200 truncate">
+                    <span className="text-sm font-medium text-gray-800 truncate">
                       {card.card_name}
                     </span>
                     <span className="badge badge-rare">{card.rare}</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-gray-400 mt-1">
                     {card.pack_name} ({card.pack_id}) #{card.pack_card_id}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs text-gray-400 mt-0.5">
                     目前最低{" "}
-                    <span className="text-gold-400 font-mono">
+                    <span className="text-amber-600 font-mono">
                       {card.lowest_price != null ? `$${card.lowest_price}` : "—"}
                     </span>
                     {" / "}均價{" "}
@@ -96,7 +96,7 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-xs text-gray-500">$</span>
+                  <span className="text-xs text-gray-400">$</span>
                   <input
                     type="number"
                     min="1"
@@ -114,7 +114,7 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-vault-700/50">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
           <button onClick={onClose} className="btn-ghost">
             取消
           </button>

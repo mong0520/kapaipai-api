@@ -109,16 +109,16 @@ export default function LineBindingPage() {
   return (
     <div className="max-w-xl mx-auto space-y-6">
       <div>
-        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
+        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-900">
           LINE 綁定
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-400 mt-1">
           綁定 LINE 帳號後，到價通知會直接推送到你的 LINE
         </p>
       </div>
 
       {toast && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm">
           <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -127,7 +127,7 @@ export default function LineBindingPage() {
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
           <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
@@ -139,23 +139,23 @@ export default function LineBindingPage() {
         /* ===== Bound State ===== */
         <div className="card-frame p-6 space-y-5 animate-fade-in">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center">
+              <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <p className="text-gray-200 font-medium">LINE 已綁定</p>
-              <p className="text-sm text-gray-400">{user!.line_display_name || user!.line_user_id}</p>
+              <p className="text-gray-800 font-medium">LINE 已綁定</p>
+              <p className="text-sm text-gray-500">{user!.line_display_name || user!.line_user_id}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-500">
             到價通知會自動發送到你的 LINE，你可以隨時解除綁定。
           </p>
           <button
             onClick={handleUnbind}
             disabled={unbinding}
-            className="btn-ghost text-sm text-red-400 hover:text-red-300"
+            className="btn-ghost text-sm text-red-500 hover:text-red-600"
           >
             {unbinding ? "解除中..." : "解除綁定"}
           </button>
@@ -167,8 +167,8 @@ export default function LineBindingPage() {
             /* Step 1: Generate code */
             <div className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-gray-200 font-medium">綁定步驟</h3>
-                <ol className="text-sm text-gray-400 space-y-1.5 list-decimal list-inside">
+                <h3 className="text-gray-800 font-medium">綁定步驟</h3>
+                <ol className="text-sm text-gray-500 space-y-1.5 list-decimal list-inside">
                   <li>點擊下方按鈕產生驗證碼</li>
                   <li>加入我們的 LINE Bot 為好友</li>
                   <li>在 LINE 聊天中傳送驗證碼給 Bot</li>
@@ -178,7 +178,7 @@ export default function LineBindingPage() {
               <button
                 onClick={handleGenerate}
                 disabled={generating}
-                className="btn-primary flex items-center gap-2"
+                className="btn-gold flex items-center gap-2"
               >
                 {generating ? (
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -197,25 +197,25 @@ export default function LineBindingPage() {
             /* Step 2: Show code + instructions */
             <div className="space-y-5">
               <div className="text-center space-y-3">
-                <p className="text-sm text-gray-400">請在 LINE 中傳送以下驗證碼給 Bot</p>
-                <div className="inline-block px-8 py-4 rounded-xl bg-vault-800 border border-gold-500/30">
-                  <span className="font-mono text-4xl font-bold tracking-[0.3em] text-gold-400">
+                <p className="text-sm text-gray-500">請在 LINE 中傳送以下驗證碼給 Bot</p>
+                <div className="inline-block px-8 py-4 rounded-xl bg-gray-50 border border-amber-200">
+                  <span className="font-mono text-4xl font-bold tracking-[0.3em] text-amber-600">
                     {code}
                   </span>
                 </div>
                 <div className="flex items-center justify-center gap-2 text-sm">
-                  <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className={`font-mono ${countdown <= 60 ? "text-red-400" : "text-gray-400"}`}>
+                  <span className={`font-mono ${countdown <= 60 ? "text-red-500" : "text-gray-500"}`}>
                     {formatCountdown(countdown)}
                   </span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-lg bg-vault-800/50 border border-vault-700/30 space-y-3">
-                <p className="text-sm text-gray-300 font-medium">操作說明</p>
-                <ol className="text-sm text-gray-400 space-y-2 list-decimal list-inside">
+              <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 space-y-3">
+                <p className="text-sm text-gray-700 font-medium">操作說明</p>
+                <ol className="text-sm text-gray-500 space-y-2 list-decimal list-inside">
                   <li>掃描下方 QR Code 加入 Bot 為好友</li>
                   <li>開啟與 Bot 的聊天</li>
                   <li>傳送上方 6 位數驗證碼</li>
@@ -246,8 +246,8 @@ export default function LineBindingPage() {
                 <button onClick={handleGenerate} className="btn-ghost text-sm">
                   重新產生
                 </button>
-                <span className="text-xs text-gray-600">等待綁定中...</span>
-                <svg className="animate-spin w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                <span className="text-xs text-gray-400">等待綁定中...</span>
+                <svg className="animate-spin w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>

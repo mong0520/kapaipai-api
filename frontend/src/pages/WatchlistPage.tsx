@@ -103,7 +103,7 @@ export default function WatchlistPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <svg
-          className="animate-spin w-6 h-6 text-gold-500"
+          className="animate-spin w-6 h-6 text-amber-500"
           fill="none"
           viewBox="0 0 24 24"
         >
@@ -130,10 +130,10 @@ export default function WatchlistPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
+          <h2 className="font-display font-bold text-2xl tracking-wide text-gray-900">
             監控清單
           </h2>
-          <p className="text-sm text-gray-500 mt-1">管理你的卡牌到價通知</p>
+          <p className="text-sm text-gray-400 mt-1">管理你的卡牌到價通知</p>
         </div>
         <button
           onClick={fetchItems}
@@ -157,7 +157,7 @@ export default function WatchlistPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
           <svg
             className="w-4 h-4 shrink-0"
             fill="none"
@@ -174,7 +174,7 @@ export default function WatchlistPage() {
           {error}
           <button
             onClick={() => setError("")}
-            className="ml-auto text-red-400/60 hover:text-red-400"
+            className="ml-auto text-red-400 hover:text-red-600"
           >
             <svg
               className="w-4 h-4"
@@ -195,9 +195,9 @@ export default function WatchlistPage() {
 
       {items.length === 0 ? (
         <div className="card-frame p-12 text-center animate-fade-in">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-gray-600"
+              className="w-8 h-8 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -216,7 +216,7 @@ export default function WatchlistPage() {
             </svg>
           </div>
           <p className="text-gray-500">尚未加入任何監控卡牌</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             前往「單卡最低價」新增你想監控的卡牌
           </p>
         </div>
@@ -225,7 +225,7 @@ export default function WatchlistPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-vault-700/30">
+                <tr className="border-b border-gray-100">
                   <th className="table-header">狀態</th>
                   <th className="table-header">卡圖</th>
                   <th className="table-header">卡牌名稱</th>
@@ -238,7 +238,7 @@ export default function WatchlistPage() {
                   <th className="table-header text-center">操作</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-vault-700/20">
+              <tbody className="divide-y divide-gray-100">
                 {items.map((item) => {
                   const snap = item.latest_snapshot;
                   const priceHit =
@@ -250,7 +250,7 @@ export default function WatchlistPage() {
                     <tr
                       key={item.id}
                       className={`transition-colors duration-150 ${
-                        priceHit ? "bg-emerald-500/5" : "hover:bg-vault-800/50"
+                        priceHit ? "bg-emerald-50/50" : "hover:bg-gray-50"
                       }`}
                     >
                       {/* Status toggle */}
@@ -263,11 +263,11 @@ export default function WatchlistPage() {
                           <div
                             className={`w-2 h-2 rounded-full transition-colors ${
                               item.is_active
-                                ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.4)]"
-                                : "bg-red-400/60"
+                                ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]"
+                                : "bg-red-300"
                             }`}
                           />
-                          <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors">
+                          <span className="text-xs text-gray-400 group-hover:text-gray-700 transition-colors">
                             {item.is_active ? "啟用" : "暫停"}
                           </span>
                         </button>
@@ -290,15 +290,15 @@ export default function WatchlistPage() {
                       </td>
 
                       {/* Card name */}
-                      <td className="table-cell font-medium text-gray-200">
+                      <td className="table-cell font-medium text-gray-800">
                         {item.card_name}
                       </td>
 
                       {/* Pack */}
-                      <td className="table-cell text-gray-400 text-xs">
+                      <td className="table-cell text-gray-500 text-xs">
                         {item.pack_name}
                         {item.pack_id && (
-                          <span className="text-gray-600 ml-1">
+                          <span className="text-gray-400 ml-1">
                             ({item.pack_id})
                           </span>
                         )}
@@ -340,12 +340,12 @@ export default function WatchlistPage() {
                                 value: String(item.target_price),
                               })
                             }
-                            className="inline-flex items-center gap-1.5 font-mono text-gold-400 hover:text-gold-300 cursor-pointer transition-colors group"
+                            className="inline-flex items-center gap-1.5 font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors group"
                             title="點擊編輯目標價"
                           >
                             ${item.target_price}
                             <svg
-                              className="w-3 h-3 text-gray-600 group-hover:text-gold-400 transition-colors"
+                              className="w-3 h-3 text-gray-400 group-hover:text-amber-600 transition-colors"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -374,17 +374,17 @@ export default function WatchlistPage() {
                             ${snap.lowest_price}
                           </span>
                         ) : (
-                          <span className="text-gray-600">—</span>
+                          <span className="text-gray-400">—</span>
                         )}
                       </td>
 
                       {/* Buyable count */}
-                      <td className="table-cell text-right font-mono text-gray-400 text-xs">
+                      <td className="table-cell text-right font-mono text-gray-500 text-xs">
                         {snap ? snap.buyable_count : "—"}
                       </td>
 
                       {/* Last checked */}
-                      <td className="table-cell text-xs text-gray-500 font-mono">
+                      <td className="table-cell text-xs text-gray-400 font-mono">
                         {snap ? formatTime(snap.checked_at) : "尚未檢查"}
                       </td>
 
@@ -462,20 +462,20 @@ export default function WatchlistPage() {
           </div>
 
           {/* Summary */}
-          <div className="px-4 py-3 border-t border-vault-700/30 flex items-center gap-4 text-xs text-gray-500">
+          <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-4 text-xs text-gray-500">
             <span>
-              共 <span className="font-mono text-gray-400">{items.length}</span>{" "}
+              共 <span className="font-mono text-gray-600">{items.length}</span>{" "}
               筆
             </span>
             <span>
               啟用中{" "}
-              <span className="font-mono text-emerald-400">
+              <span className="font-mono text-emerald-600">
                 {items.filter((i) => i.is_active).length}
               </span>
             </span>
             <span>
               已到價{" "}
-              <span className="font-mono text-gold-400">
+              <span className="font-mono text-amber-600">
                 {
                   items.filter(
                     (i) =>

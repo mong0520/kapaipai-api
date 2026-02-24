@@ -128,10 +128,10 @@ export default function SearchPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Page header */}
       <div>
-        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-100">
+        <h2 className="font-display font-bold text-2xl tracking-wide text-gray-900">
           單卡最低價
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-400 mt-1">
           搜尋寶可夢卡牌並加入到價監控
         </p>
       </div>
@@ -141,7 +141,7 @@ export default function SearchPage() {
         <div className="flex gap-3">
           <div className="relative flex-1">
             <svg
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -196,7 +196,7 @@ export default function SearchPage() {
 
       {/* Error */}
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
           <svg
             className="w-4 h-4 shrink-0"
             fill="none"
@@ -217,7 +217,7 @@ export default function SearchPage() {
       {/* Toast */}
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 animate-slide-up">
-          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-sm shadow-xl">
+          <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-sm shadow-xl">
             <svg
               className="w-4 h-4"
               fill="none"
@@ -240,16 +240,16 @@ export default function SearchPage() {
       {results.length > 0 && uniqueRares.length > 1 && (
         <div className="card-frame px-4 py-3 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-300 font-medium">
+            <span className="text-sm text-gray-700 font-medium">
               稀有度篩選
             </span>
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-gray-400">
               {uniqueRares.length} 種
             </span>
             {rareFilter && (
               <button
                 onClick={() => setRareFilter(null)}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors ml-auto"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors ml-auto"
               >
                 重設
               </button>
@@ -264,8 +264,8 @@ export default function SearchPage() {
                   onClick={() => toggleRare(r)}
                   className={`px-2.5 py-1 rounded text-xs transition-colors ${
                     sel
-                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                      : "bg-vault-800/50 text-gray-600 border border-vault-700/30 line-through"
+                      ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                      : "bg-gray-50 text-gray-400 border border-gray-200 line-through"
                   }`}
                 >
                   {r}
@@ -280,22 +280,22 @@ export default function SearchPage() {
       {filteredResults.length > 0 && (
         <div className="card-frame animate-fade-in">
           {/* Toolbar */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-vault-700/50">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-500">
                 找到{" "}
-                <span className="text-gold-400 font-mono">
+                <span className="text-amber-600 font-mono">
                   {filteredResults.length}
                 </span>{" "}
                 個結果
                 {rareFilter && (
-                  <span className="text-gray-600 ml-1">
+                  <span className="text-gray-400 ml-1">
                     (共 {results.length})
                   </span>
                 )}
               </span>
               {selected.size > 0 && (
-                <span className="badge bg-gold-500/15 text-gold-400 border border-gold-500/20">
+                <span className="badge bg-amber-50 text-amber-700 border border-amber-200">
                   已選 {selected.size}
                 </span>
               )}
@@ -314,7 +314,7 @@ export default function SearchPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-vault-700/30">
+                <tr className="border-b border-gray-100">
                   <th className="table-header w-10">
                     <input
                       type="checkbox"
@@ -323,7 +323,7 @@ export default function SearchPage() {
                         filteredResults.length > 0
                       }
                       onChange={toggleAll}
-                      className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
+                      className="rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-300 cursor-pointer"
                     />
                   </th>
                   <th className="table-header">卡圖</th>
@@ -335,7 +335,7 @@ export default function SearchPage() {
                   <th className="table-header text-right">均價</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-vault-700/20">
+              <tbody className="divide-y divide-gray-100">
                 {filteredResults.map((card, i) => {
                   const key = cardKey(card);
                   const isSelected = selected.has(key);
@@ -344,7 +344,7 @@ export default function SearchPage() {
                       key={key}
                       onClick={() => toggleSelect(key)}
                       className={`cursor-pointer transition-colors duration-150 ${
-                        isSelected ? "bg-gold-500/5" : "hover:bg-vault-800/50"
+                        isSelected ? "bg-amber-50/50" : "hover:bg-gray-50"
                       }`}
                       style={{ animationDelay: `${i * 30}ms` }}
                     >
@@ -354,14 +354,14 @@ export default function SearchPage() {
                           checked={isSelected}
                           onChange={() => toggleSelect(key)}
                           onClick={(e) => e.stopPropagation()}
-                          className="rounded border-vault-500 bg-vault-800 text-gold-500 focus:ring-gold-500/30 cursor-pointer"
+                          className="rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-300 cursor-pointer"
                         />
                       </td>
                       <td className="table-cell">
                         <img
                           src={cardImageUrl(card)}
                           alt={card.card_name}
-                          className="w-32 object-contain rounded border border-vault-600/50"
+                          className="w-32 object-contain rounded border border-gray-200"
                           loading="lazy"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display =
@@ -369,16 +369,16 @@ export default function SearchPage() {
                           }}
                         />
                       </td>
-                      <td className="table-cell font-medium text-gray-200">
+                      <td className="table-cell font-medium text-gray-800">
                         {card.card_name}
                       </td>
-                      <td className="table-cell text-gray-400">
-                        <span className="text-gray-300">{card.pack_name}</span>
-                        <span className="text-gray-600 ml-1">
+                      <td className="table-cell text-gray-500">
+                        <span className="text-gray-700">{card.pack_name}</span>
+                        <span className="text-gray-400 ml-1">
                           ({card.pack_id})
                         </span>
                       </td>
-                      <td className="table-cell font-mono text-gray-400 text-xs">
+                      <td className="table-cell font-mono text-gray-500 text-xs">
                         {card.pack_card_id}
                       </td>
                       <td className="table-cell">
@@ -386,14 +386,14 @@ export default function SearchPage() {
                       </td>
                       <td className="table-cell text-right font-mono">
                         {card.lowest_price != null ? (
-                          <span className="text-gold-400">
+                          <span className="text-amber-600">
                             ${card.lowest_price}
                           </span>
                         ) : (
-                          <span className="text-gray-600">—</span>
+                          <span className="text-gray-400">—</span>
                         )}
                       </td>
-                      <td className="table-cell text-right font-mono text-gray-400">
+                      <td className="table-cell text-right font-mono text-gray-500">
                         {card.avg_price != null ? `$${card.avg_price}` : "—"}
                       </td>
                     </tr>
@@ -408,9 +408,9 @@ export default function SearchPage() {
       {/* Empty state */}
       {searched && !searching && filteredResults.length === 0 && !error && (
         <div className="card-frame p-12 text-center animate-fade-in">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vault-800 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
             <svg
-              className="w-8 h-8 text-gray-600"
+              className="w-8 h-8 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -428,7 +428,7 @@ export default function SearchPage() {
               ? "篩選後沒有結果，試試放寬稀有度篩選"
               : "找不到相關卡牌"}
           </p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             {rareFilter ? "點擊「重設」顯示所有結果" : "請嘗試其他關鍵字"}
           </p>
         </div>
