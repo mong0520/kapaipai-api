@@ -34,9 +34,24 @@ export default function HistoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <svg className="animate-spin w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        <svg
+          className="animate-spin w-6 h-6 text-amber-500"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+          />
         </svg>
       </div>
     );
@@ -48,9 +63,7 @@ export default function HistoryPage() {
         <h2 className="font-display font-bold text-2xl tracking-wide text-gray-900">
           通知紀錄
         </h2>
-        <p className="text-sm text-gray-400 mt-1">
-          歷史到價通知列表
-        </p>
+        <p className="text-sm text-gray-400 mt-1">歷史到價通知列表</p>
       </div>
 
       {error && (
@@ -62,12 +75,24 @@ export default function HistoryPage() {
       {notifications.length === 0 ? (
         <div className="card-frame p-12 text-center animate-fade-in">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            <svg
+              className="w-8 h-8 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+              />
             </svg>
           </div>
           <p className="text-gray-500">目前沒有通知紀錄</p>
-          <p className="text-xs text-gray-400 mt-1">當你監控的卡牌到價時，通知會顯示在這裡</p>
+          <p className="text-xs text-gray-400 mt-1">
+            當你監控的卡牌到價時，通知會顯示在這裡
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -77,7 +102,7 @@ export default function HistoryPage() {
               className="card-frame p-4 animate-slide-up"
               style={{ animationDelay: `${i * 40}ms` }}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-3 md:gap-4">
                 {/* Icon */}
                 <div
                   className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
@@ -87,12 +112,32 @@ export default function HistoryPage() {
                   }`}
                 >
                   {notif.status === "sent" ? (
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    <svg
+                      className="w-4.5 h-4.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
                     </svg>
                   ) : (
-                    <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+                    <svg
+                      className="w-4.5 h-4.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"
+                      />
                     </svg>
                   )}
                 </div>
@@ -104,7 +149,9 @@ export default function HistoryPage() {
                       {notif.card_name || "未知卡牌"}
                     </span>
                     {notif.rare && (
-                      <span className="badge badge-rare text-[10px]">{notif.rare}</span>
+                      <span className="badge badge-rare text-[10px]">
+                        {notif.rare}
+                      </span>
                     )}
                     <span
                       className={`badge text-[10px] ${
@@ -120,18 +167,29 @@ export default function HistoryPage() {
                   <div className="flex items-center gap-4 mt-1.5 text-xs">
                     <span className="text-gray-500">
                       觸發價{" "}
-                      <span className="font-mono text-emerald-600">${notif.triggered_price}</span>
+                      <span className="font-mono text-emerald-600">
+                        ${notif.triggered_price}
+                      </span>
                     </span>
                     <span className="text-gray-300">/</span>
                     <span className="text-gray-500">
                       目標價{" "}
-                      <span className="font-mono text-amber-600">${notif.target_price}</span>
+                      <span className="font-mono text-amber-600">
+                        ${notif.target_price}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Time - mobile: below content */}
+                  <div className="mt-1.5 md:hidden">
+                    <span className="text-[10px] text-gray-400 font-mono">
+                      {formatTime(notif.sent_at)}
                     </span>
                   </div>
                 </div>
 
-                {/* Time */}
-                <span className="text-xs text-gray-400 font-mono shrink-0">
+                {/* Time - desktop: side */}
+                <span className="text-xs text-gray-400 font-mono shrink-0 hidden md:block">
                   {formatTime(notif.sent_at)}
                 </span>
               </div>

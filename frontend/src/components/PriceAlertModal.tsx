@@ -9,7 +9,13 @@ interface Props {
   loading?: boolean;
 }
 
-export default function PriceAlertModal({ cards, open, onClose, onSubmit, loading }: Props) {
+export default function PriceAlertModal({
+  cards,
+  open,
+  onClose,
+  onSubmit,
+  loading,
+}: Props) {
   const [prices, setPrices] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -41,10 +47,13 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
       {/* Modal */}
-      <div className="relative card-frame w-full max-w-lg max-h-[80vh] flex flex-col animate-slide-up shadow-xl">
+      <div className="relative card-frame w-full max-w-lg max-w-[calc(100vw-2rem)] max-h-[80vh] flex flex-col animate-slide-up shadow-xl">
         <div className="gold-border-top" />
 
         {/* Header */}
@@ -58,8 +67,18 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
             </p>
           </div>
           <button onClick={onClose} className="btn-ghost p-1.5">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -86,7 +105,9 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
                   <div className="text-xs text-gray-400 mt-0.5">
                     目前最低{" "}
                     <span className="text-amber-600 font-mono">
-                      {card.lowest_price != null ? `$${card.lowest_price}` : "—"}
+                      {card.lowest_price != null
+                        ? `$${card.lowest_price}`
+                        : "—"}
                     </span>
                     {" / "}均價{" "}
                     <span className="font-mono">
@@ -118,12 +139,31 @@ export default function PriceAlertModal({ cards, open, onClose, onSubmit, loadin
           <button onClick={onClose} className="btn-ghost">
             取消
           </button>
-          <button onClick={handleSubmit} className="btn-gold" disabled={loading}>
+          <button
+            onClick={handleSubmit}
+            className="btn-gold"
+            disabled={loading}
+          >
             {loading ? (
               <span className="flex items-center gap-2">
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <svg
+                  className="animate-spin w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
                 </svg>
                 處理中…
               </span>

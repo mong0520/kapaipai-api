@@ -471,7 +471,7 @@ export default function MultiSearchPage() {
         <div className="space-y-4 animate-fade-in">
           {/* Stats bar */}
           <div className="card-frame px-4 py-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="flex items-center gap-4 text-sm">
                 <span className="text-gray-500">
                   掃描{" "}
@@ -635,7 +635,7 @@ export default function MultiSearchPage() {
                 className="flex items-center justify-between px-4 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => toggleExpanded(seller.seller_nickname)}
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-wrap">
                   <span className="text-gray-800 font-medium truncate">
                     {seller.seller_nickname}
                   </span>
@@ -644,15 +644,15 @@ export default function MultiSearchPage() {
                       {seller.seller_area}
                     </span>
                   )}
-                  <span className="badge bg-gray-100 text-gray-500 shrink-0">
+                  <span className="badge bg-gray-100 text-gray-500 shrink-0 hidden md:inline-flex">
                     信用 {seller.credit}
                   </span>
-                  <span className="badge bg-gray-100 text-gray-500 shrink-0">
+                  <span className="badge bg-gray-100 text-gray-500 shrink-0 hidden md:inline-flex">
                     成交 {seller.order_complete}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="font-mono text-lg text-amber-600 font-bold">
+                <div className="flex items-center gap-2 md:gap-3 shrink-0">
+                  <span className="font-mono text-base md:text-lg text-amber-600 font-bold">
                     ${seller.total_cost}
                   </span>
                   <svg
@@ -681,7 +681,7 @@ export default function MultiSearchPage() {
                   key={cardName}
                   className="px-4 py-2.5 border-b border-gray-100 last:border-b-0"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <div className="flex items-center gap-2">
                       {(() => {
                         const imgUrl = cardImageUrlFromDetail(detail);
@@ -689,7 +689,7 @@ export default function MultiSearchPage() {
                           <img
                             src={imgUrl}
                             alt={cardName}
-                            className="w-32 object-contain rounded border border-gray-200"
+                            className="w-16 md:w-32 object-contain rounded border border-gray-200"
                             loading="lazy"
                             onError={(e) => {
                               (e.target as HTMLImageElement).style.display =
@@ -698,16 +698,41 @@ export default function MultiSearchPage() {
                           />
                         ) : null;
                       })()}
-                      <span className="text-sm text-gray-700">
-                        {detail.found_card_names?.length
-                          ? detail.found_card_names.join("、")
-                          : cardName}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        x{tags.find((t) => t.name === cardName)?.quantity ?? 1}
-                      </span>
+                      <div>
+                        <span className="text-sm text-gray-700">
+                          {detail.found_card_names?.length
+                            ? detail.found_card_names.join("、")
+                            : cardName}
+                        </span>
+                        <span className="text-xs text-gray-400 ml-1">
+                          x
+                          {tags.find((t) => t.name === cardName)?.quantity ?? 1}
+                        </span>
+                        {/* Mobile-only inline stats */}
+                        <div className="flex items-center gap-3 text-xs mt-1 md:hidden">
+                          <span className="text-gray-500">
+                            庫存{" "}
+                            <span className="font-mono text-gray-700">
+                              {detail.total_stock}
+                            </span>
+                          </span>
+                          <span className="text-gray-500">
+                            最低{" "}
+                            <span className="font-mono text-amber-600">
+                              ${detail.lowest_price}
+                            </span>
+                          </span>
+                          <span className="text-gray-500">
+                            小計{" "}
+                            <span className="font-mono text-emerald-600">
+                              ${detail.estimated_cost}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-xs">
+                    {/* Desktop-only stats */}
+                    <div className="hidden md:flex items-center gap-4 text-xs">
                       <span className="text-gray-500">
                         庫存{" "}
                         <span className="font-mono text-gray-700">
@@ -735,9 +760,9 @@ export default function MultiSearchPage() {
                       {detail.products.map((product, j) => (
                         <div
                           key={j}
-                          className="flex items-center justify-between py-1.5 px-3 rounded bg-gray-50 text-xs"
+                          className="flex flex-col md:flex-row md:items-center md:justify-between py-1.5 px-3 rounded bg-gray-50 text-xs gap-1 md:gap-0"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                             <span className="badge badge-rare text-[10px]">
                               {product.variant_rare}
                             </span>

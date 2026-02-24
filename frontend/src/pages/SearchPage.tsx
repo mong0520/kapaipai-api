@@ -379,8 +379,81 @@ export default function SearchPage() {
             )}
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto">
+          {/* Mobile card grid (< md) */}
+          <div className="md:hidden p-3">
+            <div className="grid grid-cols-2 gap-3">
+              {filteredResults.map((card, i) => {
+                const key = cardKey(card);
+                const isSelected = selected.has(key);
+                return (
+                  <div
+                    key={key}
+                    onClick={() => toggleSelect(key)}
+                    className={`relative rounded-lg border cursor-pointer transition-colors duration-150 overflow-hidden ${
+                      isSelected
+                        ? "bg-amber-50/50 border-amber-300"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    style={{ animationDelay: `${i * 30}ms` }}
+                  >
+                    {/* Checkbox overlay */}
+                    <div className="absolute top-2 right-2 z-10">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(key)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 rounded border-gray-300 bg-white/80 text-amber-500 focus:ring-amber-300 cursor-pointer"
+                      />
+                    </div>
+                    {/* Card image */}
+                    <div className="flex justify-center p-2 pb-0">
+                      <img
+                        src={cardImageUrl(card)}
+                        alt={card.card_name}
+                        className="w-full max-w-[160px] object-contain rounded"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                    {/* Card info */}
+                    <div className="p-2 space-y-1">
+                      <div className="text-sm font-medium text-gray-800 truncate">
+                        {card.card_name}
+                      </div>
+                      <div className="text-[11px] text-gray-500 truncate">
+                        {card.pack_name}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="badge badge-rare text-[10px]">
+                          {card.rare}
+                        </span>
+                        <span className="text-[10px] font-mono text-gray-400">
+                          #{card.pack_card_id}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs font-mono text-amber-600 font-medium">
+                          {card.lowest_price != null
+                            ? `$${card.lowest_price}`
+                            : "—"}
+                        </span>
+                        <span className="text-[10px] font-mono text-gray-400">
+                          均{" "}
+                          {card.avg_price != null ? `$${card.avg_price}` : "—"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Desktop table (≥ md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100">

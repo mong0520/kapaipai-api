@@ -222,7 +222,200 @@ export default function WatchlistPage() {
         </div>
       ) : (
         <div className="card-frame animate-fade-in">
-          <div className="overflow-x-auto">
+          {/* Mobile card list (< md) */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {items.map((item) => {
+              const snap = item.latest_snapshot;
+              const priceHit =
+                snap?.lowest_price != null &&
+                snap.lowest_price <= item.target_price;
+              const isChecking = checking.has(item.id);
+
+              return (
+                <div
+                  key={item.id}
+                  className={`p-3 transition-colors ${
+                    priceHit ? "bg-emerald-50/50" : ""
+                  }`}
+                >
+                  <div className="flex gap-3">
+                    {/* Card image */}
+                    {cardImageUrl(item) && (
+                      <img
+                        src={cardImageUrl(item)!}
+                        alt={item.card_name}
+                        loading="lazy"
+                        className="w-24 object-contain rounded shrink-0"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    )}
+                    {/* Info */}
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleToggle(item)}
+                          className="shrink-0"
+                          title={item.is_active ? "點擊暫停" : "點擊啟用"}
+                        >
+                          <div
+                            className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                              item.is_active
+                                ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]"
+                                : "bg-red-300"
+                            }`}
+                          />
+                        </button>
+                        <span className="text-sm font-medium text-gray-800 truncate">
+                          {item.card_name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="badge badge-rare text-[10px]">
+                          {item.rare}
+                        </span>
+                        <span className="text-[11px] text-gray-500 truncate">
+                          {item.pack_name}
+                        </span>
+                      </div>
+                      {/* Prices */}
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className="text-gray-500">
+                          目標{" "}
+                          {editingPrice?.id === item.id ? (
+                            <input
+                              type="number"
+                              autoFocus
+                              value={editingPrice.value}
+                              onChange={(e) =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  value: e.target.value,
+                                })
+                              }
+                              onBlur={() =>
+                                handlePriceUpdate(item.id, editingPrice.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  handlePriceUpdate(
+                                    item.id,
+                                    editingPrice.value,
+                                  );
+                                if (e.key === "Escape") setEditingPrice(null);
+                              }}
+                              className="input-dark w-16 !py-0.5 text-xs text-right font-mono inline-block"
+                            />
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  value: String(item.target_price),
+                                })
+                              }
+                              className="font-mono text-amber-600"
+                            >
+                              ${item.target_price}
+                            </button>
+                          )}
+                        </span>
+                        <span className="text-gray-300">|</span>
+                        <span className="text-gray-500">
+                          最低{" "}
+                          {snap?.lowest_price != null ? (
+                            <span
+                              className={`font-mono ${
+                                priceHit
+                                  ? "price-hit font-semibold"
+                                  : "price-miss"
+                              }`}
+                            >
+                              ${snap.lowest_price}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">—</span>
+                          )}
+                        </span>
+                      </div>
+                      {/* Last checked */}
+                      <div className="text-[10px] text-gray-400 font-mono">
+                        {snap ? formatTime(snap.checked_at) : "尚未檢查"}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Action buttons */}
+                  <div className="flex items-center justify-end gap-2 mt-2">
+                    <button
+                      onClick={() => handleCheck(item.id)}
+                      disabled={isChecking}
+                      className="btn-ghost p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      title="立即查詢"
+                    >
+                      {isChecking ? (
+                        <svg
+                          className="animate-spin w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="btn-danger p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                      title="刪除"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop table (≥ md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100">
