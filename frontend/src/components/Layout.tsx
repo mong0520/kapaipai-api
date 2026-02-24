@@ -1,6 +1,19 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import SearchPage from "../pages/SearchPage";
+import MultiSearchPage from "../pages/MultiSearchPage";
+import WatchlistPage from "../pages/WatchlistPage";
+import HistoryPage from "../pages/HistoryPage";
+import LineBindingPage from "../pages/LineBindingPage";
+
+const pages = [
+  { path: "/", component: SearchPage },
+  { path: "/multi-search", component: MultiSearchPage },
+  { path: "/watchlist", component: WatchlistPage },
+  { path: "/history", component: HistoryPage },
+  { path: "/line-binding", component: LineBindingPage },
+];
 
 const navItems = [
   {
@@ -108,6 +121,7 @@ const navItems = [
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+  const location = useLocation();
 
   return (
     <div className="min-h-screen flex">
@@ -251,9 +265,18 @@ export default function Layout() {
           </span>
         </header>
 
-        {/* Page content */}
+        {/* Page content — all pages stay mounted, only active one visible */}
         <main className="flex-1 p-4 md:p-6 lg:p-8">
-          <Outlet />
+          {pages.map(({ path, component: Page }) => (
+            <div
+              key={path}
+              style={{
+                display: location.pathname === path ? undefined : "none",
+              }}
+            >
+              <Page />
+            </div>
+          ))}
         </main>
       </div>
     </div>
