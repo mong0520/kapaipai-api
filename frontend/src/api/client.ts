@@ -38,7 +38,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 // Card search
 export async function searchCards(name: string) {
   return request<{ data: CardVariant[]; total: number }>(
-    `/cards/search?name=${encodeURIComponent(name)}`
+    `/cards/search?name=${encodeURIComponent(name)}`,
   );
 }
 
@@ -80,7 +80,8 @@ export async function addToWatchlist(
     pack_card_id?: string;
     rare: string;
     target_price: number;
-  }>
+    target_price_min?: number;
+  }>,
 ) {
   return request<{ data: WatchlistItem[]; message: string }>("/watchlist", {
     method: "POST",
@@ -90,7 +91,11 @@ export async function addToWatchlist(
 
 export async function updateWatchlistItem(
   id: number,
-  updates: { target_price?: number; is_active?: boolean }
+  updates: {
+    target_price?: number;
+    target_price_min?: number;
+    is_active?: boolean;
+  },
 ) {
   return request<{ data: WatchlistItem }>(`/watchlist/${id}`, {
     method: "PATCH",
@@ -107,7 +112,7 @@ export async function deleteWatchlistItem(id: number) {
 export async function checkWatchlistItem(id: number) {
   return request<{ data: WatchlistItem; snapshot: PriceSnapshot }>(
     `/watchlist/${id}/check`,
-    { method: "POST" }
+    { method: "POST" },
   );
 }
 
@@ -136,6 +141,6 @@ export async function generateLineBindingCode() {
 // Notifications
 export async function getNotifications(limit = 50) {
   return request<{ data: NotificationRecord[] }>(
-    `/notifications?limit=${limit}`
+    `/notifications?limit=${limit}`,
   );
 }

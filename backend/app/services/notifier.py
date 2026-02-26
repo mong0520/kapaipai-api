@@ -59,7 +59,8 @@ def send_line_message(message: str, user_id: str | None = None,
 
 def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
                           image_url: str | None, product_url: str | None,
-                          user_id: str | None = None) -> bool:
+                          user_id: str | None = None,
+                          target_price_min: int = 0) -> bool:
     """Send a price alert using Flex Message with card-style UI.
 
     Args:
@@ -133,7 +134,7 @@ def send_price_alert_flex(card_name: str, target_price: int, current_price: int,
                                 },
                                 {
                                     "type": "text",
-                                    "text": f"${target_price}",
+                                    "text": f"${target_price_min}~${target_price}" if target_price_min > 0 else f"≤ ${target_price}",
                                     "wrap": True,
                                     "color": "#666666",
                                     "size": "sm",

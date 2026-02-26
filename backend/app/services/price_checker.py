@@ -34,11 +34,13 @@ def check_single_item(item: WatchlistItem) -> PriceSnapshot | None:
     db.session.add(snapshot)
     db.session.flush()
 
-    # Check if we should notify
+    # Check if we should notify (price must be within [target_price_min, target_price] range)
     if summary["lowest_price"] is not None and summary["lowest_price"] <= item.target_price:
-        # Get the lowest-priced product for the link
-        lowest_product = summary["products"][0] if summary["products"] else None
-        _maybe_notify(item, summary["lowest_price"], lowest_product)
+        price_min = item.target_price_min or 0
+        if summary["lowest_price"] >= price_min:
+            # Get the lowest-priced product for the link
+            lowest_product = summary["products"][0] if summary["products"] else None
+            _maybe_notify(item, summary["lowest_price"], lowest_product)
 
     return snapshot
 
@@ -82,13 +84,21 @@ def _maybe_notify(item: WatchlistItem, current_price: int, lowest_product: dict 
         image_url=img_url,
         product_url=product_link,
         user_id=line_user_id,
+        target_price_min=item.target_price_min or 0,
     )
 
     # Keep message for notification record
-    message = (
-        f"你感興趣的卡片 {item.card_name} 已經到達目標價 "
-        f"${item.target_price} 囉，現在只要 ${current_price}，趕快去看看吧"
-    )
+    price_min = item.target_price_min or 0
+    if price_min > 0:
+        message = (
+            f"你感興趣的卡片 {item.card_name} 已經在目標價格區間 "
+            f"${price_min}~${item.target_price} 內囉，現在只要 ${current_price}，趕快去看看吧"
+        )
+    else:
+        message = (
+            f"你感興趣的卡片 {item.card_name} 已經到達目標價 "
+            f"${item.target_price} 囉，現在只要 ${current_price}，趕快去看看吧"
+        )
     if product_link:
         message += f"\n\n商品連結：{product_link}"
 

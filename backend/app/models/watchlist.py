@@ -17,6 +17,7 @@ class WatchlistItem(db.Model):
     pack_card_id = db.Column(db.String(50), nullable=True)
     rare = db.Column(db.String(50), nullable=False)
     target_price = db.Column(db.Integer, nullable=False)
+    target_price_min = db.Column(db.Integer, nullable=True, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
@@ -46,6 +47,7 @@ class WatchlistItem(db.Model):
             "pack_card_id": self.pack_card_id,
             "rare": self.rare,
             "target_price": self.target_price,
+            "target_price_min": self.target_price_min or 0,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

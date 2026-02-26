@@ -56,6 +56,7 @@ def add_items():
         if existing:
             # Update target price if already exists
             existing.target_price = item_data["target_price"]
+            existing.target_price_min = item_data.get("target_price_min", 0)
             existing.is_active = True
             created.append(existing)
             continue
@@ -69,6 +70,7 @@ def add_items():
             pack_card_id=item_data.get("pack_card_id"),
             rare=item_data["rare"],
             target_price=item_data["target_price"],
+            target_price_min=item_data.get("target_price_min", 0),
         )
         db.session.add(item)
         created.append(item)
@@ -96,6 +98,8 @@ def update_item(item_id):
     body = request.get_json()
     if "target_price" in body:
         item.target_price = body["target_price"]
+    if "target_price_min" in body:
+        item.target_price_min = body["target_price_min"]
     if "is_active" in body:
         item.is_active = body["is_active"]
 

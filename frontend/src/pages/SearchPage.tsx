@@ -136,7 +136,9 @@ export default function SearchPage() {
   const selectedCards = results.filter((c) => selected.has(cardKey(c)));
 
   async function handleAddToWatchlist(
-    items: Array<CardVariant & { target_price: number }>,
+    items: Array<
+      CardVariant & { target_price: number; target_price_min: number }
+    >,
   ) {
     setSubmitting(true);
     try {
@@ -148,6 +150,7 @@ export default function SearchPage() {
         pack_card_id: item.pack_card_id,
         rare: item.rare,
         target_price: item.target_price,
+        target_price_min: item.target_price_min,
       }));
       const res = await addToWatchlist(payload);
       setModalOpen(false);

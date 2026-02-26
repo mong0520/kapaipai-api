@@ -5,7 +5,9 @@ interface Props {
   cards: CardVariant[];
   open: boolean;
   onClose: () => void;
-  onSubmit: (items: Array<CardVariant & { target_price: number }>) => void;
+  onSubmit: (
+    items: Array<CardVariant & { target_price: number; target_price_min: number }>,
+  ) => void;
   loading?: boolean;
 }
 
@@ -17,15 +19,19 @@ export default function PriceAlertModal({
   loading,
 }: Props) {
   const [prices, setPrices] = useState<Record<string, string>>({});
+  const [minPrices, setMinPrices] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (open) {
       const initial: Record<string, string> = {};
+      const initialMin: Record<string, string> = {};
       for (const c of cards) {
         const key = `${c.card_key}|${c.rare}|${c.pack_id}`;
         initial[key] = c.lowest_price ? String(c.lowest_price) : "";
+        initialMin[key] = "";
       }
       setPrices(initial);
+      setMinPrices(initialMin);
     }
   }, [open, cards]);
 
@@ -36,7 +42,12 @@ export default function PriceAlertModal({
       .map((c) => {
         const key = `${c.card_key}|${c.rare}|${c.pack_id}`;
         const price = parseInt(prices[key] || "0", 10);
-        return { ...c, target_price: price };
+        const minPrice = parseInt(minPrices[key] || "0", 10);
+        return {
+          ...c,
+          target_price: price,
+          target_price_min: isNaN(minPrice) || minPrice < 0 ? 0 : minPrice,
+        };
       })
       .filter((item) => item.target_price > 0);
 
@@ -90,7 +101,7 @@ export default function PriceAlertModal({
             return (
               <div
                 key={key}
-                className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 border border-gray-200"
+                className="flex flex-col gap-2 p-3 rounded-lg bg-gray-50 border border-gray-200"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -116,22 +127,49 @@ export default function PriceAlertModal({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-xs text-gray-400">$</span>
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="目標價"
-                    value={prices[key] || ""}
-                    onChange={(e) =>
-                      setPrices((prev) => ({ ...prev, [key]: e.target.value }))
-                    }
-                    className="input-dark w-24 !py-1.5 text-sm text-right font-mono"
-                  />
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-xs text-gray-400 w-8">最低</span>
+                    <span className="text-xs text-gray-400">$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={minPrices[key] || ""}
+                      onChange={(e) =>
+                        setMinPrices((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }))
+                      }
+                      className="input-dark w-20 !py-1.5 text-sm text-right font-mono"
+                    />
+                  </div>
+                  <span className="text-gray-300">~</span>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-xs text-gray-400 w-8">最高</span>
+                    <span className="text-xs text-gray-400">$</span>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="目標價"
+                      value={prices[key] || ""}
+                      onChange={(e) =>
+                        setPrices((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }))
+                      }
+                      className="input-dark w-20 !py-1.5 text-sm text-right font-mono"
+                    />
+                  </div>
                 </div>
               </div>
             );
           })}
+          <p className="text-[11px] text-gray-400 leading-relaxed">
+            * 最低價可過濾疑似假低價的賣家，設 0 或留空表示不設下限
+          </p>
         </div>
 
         {/* Footer */}

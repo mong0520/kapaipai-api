@@ -53,6 +53,7 @@ export interface WatchlistItem {
   pack_card_id: string | null;
   rare: string;
   target_price: number;
+  target_price_min: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;

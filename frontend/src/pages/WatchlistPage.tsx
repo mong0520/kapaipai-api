@@ -14,12 +14,20 @@ function cardImageUrl(item: WatchlistItem): string | null {
   return `https://static.kapaipai.tw/image/card/pkmtw/${encodeURIComponent(item.card_key)}/${encodeURIComponent(item.pack_id)}/${encodeURIComponent(item.pack_card_id)}/${encodeURIComponent(rare)}.jpg`;
 }
 
+function isPriceHit(item: WatchlistItem): boolean {
+  const snap = item.latest_snapshot;
+  if (snap?.lowest_price == null) return false;
+  const min = item.target_price_min || 0;
+  return snap.lowest_price >= min && snap.lowest_price <= item.target_price;
+}
+
 export default function WatchlistPage() {
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState<Set<number>>(new Set());
   const [editingPrice, setEditingPrice] = useState<{
     id: number;
+    field: "target_price" | "target_price_min";
     value: string;
   } | null>(null);
   const [error, setError] = useState("");
@@ -75,14 +83,24 @@ export default function WatchlistPage() {
     }
   }
 
-  async function handlePriceUpdate(id: number, value: string) {
+  async function handlePriceUpdate(
+    id: number,
+    field: "target_price" | "target_price_min",
+    value: string,
+  ) {
     const price = parseInt(value, 10);
-    if (isNaN(price) || price <= 0) {
+    if (field === "target_price" && (isNaN(price) || price <= 0)) {
       setEditingPrice(null);
       return;
     }
+    if (field === "target_price_min" && isNaN(price)) {
+      setEditingPrice(null);
+      return;
+    }
+    const finalPrice =
+      field === "target_price_min" ? Math.max(0, price) : price;
     try {
-      const res = await updateWatchlistItem(id, { target_price: price });
+      const res = await updateWatchlistItem(id, { [field]: finalPrice });
       setItems((prev) => prev.map((i) => (i.id === id ? res.data : i)));
     } catch (e) {
       setError(e instanceof Error ? e.message : "更新失敗");
@@ -122,6 +140,56 @@ export default function WatchlistPage() {
           />
         </svg>
       </div>
+    );
+  }
+
+  function renderPriceEditor(
+    item: WatchlistItem,
+    field: "target_price" | "target_price_min",
+    currentValue: number,
+    label: string,
+  ) {
+    const isEditing =
+      editingPrice?.id === item.id && editingPrice?.field === field;
+
+    if (isEditing) {
+      return (
+        <input
+          type="number"
+          autoFocus
+          value={editingPrice.value}
+          onChange={(e) =>
+            setEditingPrice({
+              id: item.id,
+              field,
+              value: e.target.value,
+            })
+          }
+          onBlur={() => handlePriceUpdate(item.id, field, editingPrice.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter")
+              handlePriceUpdate(item.id, field, editingPrice.value);
+            if (e.key === "Escape") setEditingPrice(null);
+          }}
+          className="input-dark w-16 !py-0.5 text-xs text-right font-mono inline-block"
+        />
+      );
+    }
+
+    return (
+      <button
+        onClick={() =>
+          setEditingPrice({
+            id: item.id,
+            field,
+            value: String(currentValue),
+          })
+        }
+        className="font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors"
+        title={`點擊編輯${label}`}
+      >
+        ${currentValue}
+      </button>
     );
   }
 
@@ -226,9 +294,7 @@ export default function WatchlistPage() {
           <div className="md:hidden divide-y divide-gray-100">
             {items.map((item) => {
               const snap = item.latest_snapshot;
-              const priceHit =
-                snap?.lowest_price != null &&
-                snap.lowest_price <= item.target_price;
+              const priceHit = isPriceHit(item);
               const isChecking = checking.has(item.id);
 
               return (
@@ -280,45 +346,21 @@ export default function WatchlistPage() {
                         </span>
                       </div>
                       {/* Prices */}
-                      <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-2 text-xs flex-wrap">
                         <span className="text-gray-500">
                           目標{" "}
-                          {editingPrice?.id === item.id ? (
-                            <input
-                              type="number"
-                              autoFocus
-                              value={editingPrice.value}
-                              onChange={(e) =>
-                                setEditingPrice({
-                                  id: item.id,
-                                  value: e.target.value,
-                                })
-                              }
-                              onBlur={() =>
-                                handlePriceUpdate(item.id, editingPrice.value)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter")
-                                  handlePriceUpdate(
-                                    item.id,
-                                    editingPrice.value,
-                                  );
-                                if (e.key === "Escape") setEditingPrice(null);
-                              }}
-                              className="input-dark w-16 !py-0.5 text-xs text-right font-mono inline-block"
-                            />
-                          ) : (
-                            <button
-                              onClick={() =>
-                                setEditingPrice({
-                                  id: item.id,
-                                  value: String(item.target_price),
-                                })
-                              }
-                              className="font-mono text-amber-600"
-                            >
-                              ${item.target_price}
-                            </button>
+                          {renderPriceEditor(
+                            item,
+                            "target_price_min",
+                            item.target_price_min || 0,
+                            "最低價",
+                          )}
+                          <span className="text-gray-300 mx-0.5">~</span>
+                          {renderPriceEditor(
+                            item,
+                            "target_price",
+                            item.target_price,
+                            "最高價",
                           )}
                         </span>
                         <span className="text-gray-300">|</span>
@@ -424,7 +466,7 @@ export default function WatchlistPage() {
                   <th className="table-header">卡牌名稱</th>
                   <th className="table-header">擴充包</th>
                   <th className="table-header">稀有度</th>
-                  <th className="table-header text-right">目標價</th>
+                  <th className="table-header text-right">目標價格區間</th>
                   <th className="table-header text-right">目前最低</th>
                   <th className="table-header text-right">賣家數</th>
                   <th className="table-header">最後檢查</th>
@@ -434,9 +476,7 @@ export default function WatchlistPage() {
               <tbody className="divide-y divide-gray-100">
                 {items.map((item) => {
                   const snap = item.latest_snapshot;
-                  const priceHit =
-                    snap?.lowest_price != null &&
-                    snap.lowest_price <= item.target_price;
+                  const priceHit = isPriceHit(item);
                   const isChecking = checking.has(item.id);
 
                   return (
@@ -502,56 +542,116 @@ export default function WatchlistPage() {
                         <span className="badge badge-rare">{item.rare}</span>
                       </td>
 
-                      {/* Target price */}
+                      {/* Target price range */}
                       <td className="table-cell text-right">
-                        {editingPrice?.id === item.id ? (
-                          <input
-                            type="number"
-                            autoFocus
-                            value={editingPrice.value}
-                            onChange={(e) =>
-                              setEditingPrice({
-                                id: item.id,
-                                value: e.target.value,
-                              })
-                            }
-                            onBlur={() =>
-                              handlePriceUpdate(item.id, editingPrice.value)
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter")
-                                handlePriceUpdate(item.id, editingPrice.value);
-                              if (e.key === "Escape") setEditingPrice(null);
-                            }}
-                            className="input-dark w-20 !py-1 text-sm text-right font-mono"
-                          />
-                        ) : (
-                          <button
-                            onClick={() =>
-                              setEditingPrice({
-                                id: item.id,
-                                value: String(item.target_price),
-                              })
-                            }
-                            className="inline-flex items-center gap-1.5 font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors group"
-                            title="點擊編輯目標價"
-                          >
-                            ${item.target_price}
-                            <svg
-                              className="w-3 h-3 text-gray-400 group-hover:text-amber-600 transition-colors"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
+                        <div className="inline-flex items-center gap-1">
+                          {editingPrice?.id === item.id &&
+                          editingPrice?.field === "target_price_min" ? (
+                            <input
+                              type="number"
+                              autoFocus
+                              value={editingPrice.value}
+                              onChange={(e) =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  field: "target_price_min",
+                                  value: e.target.value,
+                                })
+                              }
+                              onBlur={() =>
+                                handlePriceUpdate(
+                                  item.id,
+                                  "target_price_min",
+                                  editingPrice.value,
+                                )
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  handlePriceUpdate(
+                                    item.id,
+                                    "target_price_min",
+                                    editingPrice.value,
+                                  );
+                                if (e.key === "Escape") setEditingPrice(null);
+                              }}
+                              className="input-dark w-16 !py-1 text-sm text-right font-mono"
+                            />
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  field: "target_price_min",
+                                  value: String(item.target_price_min || 0),
+                                })
+                              }
+                              className="inline-flex items-center font-mono text-gray-500 hover:text-amber-600 cursor-pointer transition-colors text-xs"
+                              title="點擊編輯最低價"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                              />
-                            </svg>
-                          </button>
-                        )}
+                              ${item.target_price_min || 0}
+                            </button>
+                          )}
+                          <span className="text-gray-300 text-xs">~</span>
+                          {editingPrice?.id === item.id &&
+                          editingPrice?.field === "target_price" ? (
+                            <input
+                              type="number"
+                              autoFocus
+                              value={editingPrice.value}
+                              onChange={(e) =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  field: "target_price",
+                                  value: e.target.value,
+                                })
+                              }
+                              onBlur={() =>
+                                handlePriceUpdate(
+                                  item.id,
+                                  "target_price",
+                                  editingPrice.value,
+                                )
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  handlePriceUpdate(
+                                    item.id,
+                                    "target_price",
+                                    editingPrice.value,
+                                  );
+                                if (e.key === "Escape") setEditingPrice(null);
+                              }}
+                              className="input-dark w-16 !py-1 text-sm text-right font-mono"
+                            />
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setEditingPrice({
+                                  id: item.id,
+                                  field: "target_price",
+                                  value: String(item.target_price),
+                                })
+                              }
+                              className="inline-flex items-center gap-1 font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors group"
+                              title="點擊編輯最高價"
+                            >
+                              ${item.target_price}
+                              <svg
+                                className="w-3 h-3 text-gray-400 group-hover:text-amber-600 transition-colors"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
                       </td>
 
                       {/* Current lowest */}
@@ -669,13 +769,7 @@ export default function WatchlistPage() {
             <span>
               已到價{" "}
               <span className="font-mono text-amber-600">
-                {
-                  items.filter(
-                    (i) =>
-                      i.latest_snapshot?.lowest_price != null &&
-                      i.latest_snapshot.lowest_price <= i.target_price,
-                  ).length
-                }
+                {items.filter((i) => isPriceHit(i)).length}
               </span>
             </span>
           </div>
