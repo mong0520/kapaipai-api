@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { WatchlistItem } from "../types";
 import {
   getWatchlist,
@@ -21,43 +21,25 @@ function isPriceHit(item: WatchlistItem): boolean {
   return snap.lowest_price >= min && snap.lowest_price <= item.target_price;
 }
 
-/* ── Price Range Edit Popover ── */
-function PriceRangePopover({
+/* ── Price Range Edit Modal ── */
+function PriceRangeModal({
   item,
-  anchorRef,
   onSave,
   onClose,
 }: {
   item: WatchlistItem;
-  anchorRef: React.RefObject<HTMLElement | null>;
   onSave: (id: number, min: number, max: number) => void;
   onClose: () => void;
 }) {
   const [minVal, setMinVal] = useState(String(item.target_price_min || 0));
   const [maxVal, setMaxVal] = useState(String(item.target_price));
-  const popoverRef = useRef<HTMLDivElement>(null);
-
-  // Close on click outside
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node) &&
-        anchorRef.current &&
-        !anchorRef.current.contains(e.target as Node)
-      ) {
-        onClose();
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [onClose, anchorRef]);
 
   function handleSave() {
     const parsedMin = parseInt(minVal, 10);
     const parsedMax = parseInt(maxVal, 10);
     const finalMin = isNaN(parsedMin) || parsedMin < 0 ? 0 : parsedMin;
-    const finalMax = isNaN(parsedMax) || parsedMax <= 0 ? item.target_price : parsedMax;
+    const finalMax =
+      isNaN(parsedMax) || parsedMax <= 0 ? item.target_price : parsedMax;
     onSave(item.id, finalMin, finalMax);
   }
 
@@ -67,53 +49,74 @@ function PriceRangePopover({
   }
 
   return (
-    <div
-      ref={popoverRef}
-      className="absolute z-50 mt-1 p-3 rounded-lg bg-white border border-gray-200 shadow-lg animate-fade-in"
-      style={{ minWidth: 220 }}
-    >
-      <div className="text-xs font-medium text-gray-500 mb-2">目標價格區間</div>
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <label className="text-[10px] text-gray-400 mb-0.5 block">最低</label>
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-400">$</span>
-            <input
-              type="number"
-              min="0"
-              autoFocus
-              value={minVal}
-              onChange={(e) => setMinVal(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="input-dark w-full !py-1.5 text-sm text-right font-mono"
-              placeholder="0"
-            />
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      {/* Modal */}
+      <div className="relative card-frame w-full max-w-xs shadow-xl animate-slide-up">
+        <div className="gold-border-top" />
+        <div className="px-5 pt-4 pb-2">
+          <h3 className="font-display font-bold text-sm text-gray-900">
+            編輯目標價格
+          </h3>
+          <p className="text-xs text-gray-400 mt-0.5 truncate">
+            {item.card_name}
+          </p>
         </div>
-        <span className="text-gray-300 mt-4">~</span>
-        <div className="flex-1">
-          <label className="text-[10px] text-gray-400 mb-0.5 block">最高</label>
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-gray-400">$</span>
-            <input
-              type="number"
-              min="1"
-              value={maxVal}
-              onChange={(e) => setMaxVal(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="input-dark w-full !py-1.5 text-sm text-right font-mono"
-              placeholder="目標價"
-            />
+        <div className="px-5 py-3">
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <label className="text-[10px] text-gray-400 mb-1 block">
+                最低價
+              </label>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-400">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  autoFocus
+                  value={minVal}
+                  onChange={(e) => setMinVal(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="input-dark w-full !py-1.5 text-sm text-right font-mono"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+            <span className="text-gray-300 mt-4">~</span>
+            <div className="flex-1">
+              <label className="text-[10px] text-gray-400 mb-1 block">
+                最高價
+              </label>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-400">$</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={maxVal}
+                  onChange={(e) => setMaxVal(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="input-dark w-full !py-1.5 text-sm text-right font-mono"
+                  placeholder="目標價"
+                />
+              </div>
+            </div>
           </div>
+          <p className="text-[10px] text-gray-400 mt-2">
+            * 最低價可過濾疑似假低價賣家，設 0 表示不設下限
+          </p>
         </div>
-      </div>
-      <div className="flex items-center justify-end gap-2 mt-3">
-        <button onClick={onClose} className="btn-ghost text-xs !py-1 !px-2">
-          取消
-        </button>
-        <button onClick={handleSave} className="btn-gold text-xs !py-1 !px-3">
-          儲存
-        </button>
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-100">
+          <button onClick={onClose} className="btn-ghost text-xs">
+            取消
+          </button>
+          <button onClick={handleSave} className="btn-gold text-xs">
+            儲存
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -125,7 +128,6 @@ export default function WatchlistPage() {
   const [checking, setChecking] = useState<Set<number>>(new Set());
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [error, setError] = useState("");
-  const anchorRefs = useRef<Map<number, HTMLElement>>(new Map());
 
   const fetchItems = useCallback(async () => {
     try {
@@ -203,41 +205,26 @@ export default function WatchlistPage() {
   function renderPriceRangeButton(item: WatchlistItem) {
     const min = item.target_price_min || 0;
     return (
-      <div className="relative inline-block">
-        <button
-          ref={(el) => {
-            if (el) anchorRefs.current.set(item.id, el);
-          }}
-          onClick={() =>
-            setEditingItemId(editingItemId === item.id ? null : item.id)
-          }
-          className="inline-flex items-center gap-1 font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors group"
-          title="點擊編輯目標價格區間"
+      <button
+        onClick={() => setEditingItemId(item.id)}
+        className="inline-flex items-center gap-1 font-mono text-amber-600 hover:text-amber-700 cursor-pointer transition-colors group"
+        title="點擊編輯目標價格區間"
+      >
+        {min > 0 ? `$${min}~$${item.target_price}` : `$${item.target_price}`}
+        <svg
+          className="w-3 h-3 text-gray-400 group-hover:text-amber-600 transition-colors"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          {min > 0 ? `$${min}~$${item.target_price}` : `$${item.target_price}`}
-          <svg
-            className="w-3 h-3 text-gray-400 group-hover:text-amber-600 transition-colors"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-            />
-          </svg>
-        </button>
-        {editingItemId === item.id && (
-          <PriceRangePopover
-            item={item}
-            anchorRef={{ current: anchorRefs.current.get(item.id) ?? null }}
-            onSave={handlePriceRangeSave}
-            onClose={() => setEditingItemId(null)}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
           />
-        )}
-      </div>
+        </svg>
+      </button>
     );
   }
 
@@ -729,6 +716,20 @@ export default function WatchlistPage() {
           </div>
         </div>
       )}
+
+      {/* Price range edit modal */}
+      {editingItemId != null &&
+        (() => {
+          const editItem = items.find((i) => i.id === editingItemId);
+          if (!editItem) return null;
+          return (
+            <PriceRangeModal
+              item={editItem}
+              onSave={handlePriceRangeSave}
+              onClose={() => setEditingItemId(null)}
+            />
+          );
+        })()}
     </div>
   );
 }
